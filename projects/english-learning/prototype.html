@@ -4,79 +4,101 @@
 
 <!--
   ══════════════════════════════════════════════════════════════
-  萌宠英语岛(工作名) · 交互原型
-  客户需求:牛津译林版 7-9 年级英语学习网站
-  · 可点玩的完整核心循环:每日任务 → 积分 → 盲盒 → 宠物
-  · 单词/拼写/课文跟读(浏览器 TTS 发音)、情景对话、单元小测
-  · 动画区时段门禁:家长开关 && (周末 || 寒暑假) —— 真实日期逻辑
-  · 所有单词释义与例句为原创示例;课文为原创同主题短文
-    (教材原文与配套音频需版权授权,见 README 第 3 节)
-  · 演示数据存在浏览器本地,右上角 ⚙ 家长中心可重置
+  萌宠英语岛(工作名) · 交互原型 V2「岛屿版」
+  · 首页 = 岛屿关卡地图:每日任务是路径上的节点,全部完成开宝箱
+  · 手绘感场景(SVG):天空/云/海浪/小岛/棕榈树,深色模式 = 夜晚的岛
+  · 角色化宠物「团团」(岛屿小精灵,会眨眼/跳跃/进食)
+  · 盲盒 = 扭蛋机;情景对话带店铺场景与 NPC 头像;自定义图标
+  · 功能与 V1 一致:任务积分/认词/拼写/跟读(TTS)/对话/小测/
+    盲盒保底/宠物好友/动画区真实时段门禁/家长中心
+  · 单词释义例句短文均为原创演示内容;正式版美术需专业插画资产
   ══════════════════════════════════════════════════════════════
 -->
 
 <style>
   :root {
-    --bg: #FDF7EC;
+    --bg: #FBF4E4;
     --surface: #FFFFFF;
-    --sunken: #F6EEDD;
-    --ink: #33302A;
-    --muted: #8A8274;
-    --line: #EDE4D0;
-    --green: #2EAF7D;
-    --green-soft: rgba(46, 175, 125, 0.13);
+    --sunken: #F4EAD3;
+    --ink: #35311F;
+    --muted: #8C8267;
+    --line: #E9DEC2;
+    --green: #2FA878;
+    --green-soft: rgba(47, 168, 120, 0.14);
     --yellow: #FFB937;
-    --yellow-soft: rgba(255, 185, 55, 0.16);
+    --yellow-soft: rgba(255, 185, 55, 0.18);
     --coral: #FF6B4A;
-    --coral-soft: rgba(255, 107, 74, 0.12);
-    --blue: #4C9EEB;
-    --blue-soft: rgba(76, 158, 235, 0.13);
+    --coral-soft: rgba(255, 107, 74, 0.13);
+    --blue: #3E97DE;
+    --blue-soft: rgba(62, 151, 222, 0.14);
     --purple: #9B6DFF;
-    --purple-soft: rgba(155, 109, 255, 0.13);
-    --shadow: 0 14px 34px -16px rgba(51, 48, 42, 0.28);
-    --ring: rgba(46, 175, 125, 0.5);
+    --purple-soft: rgba(155, 109, 255, 0.14);
+    --shadow: 0 16px 36px -16px rgba(70, 58, 28, 0.3);
+    --ring: rgba(47, 168, 120, 0.5);
+    /* 岛屿场景 */
+    --sky1: #8FD4EF; --sky2: #FFF0CE;
+    --sun: #FFD166; --sun-glow: rgba(255, 209, 102, 0.45);
+    --sea: #4FB0DA; --wave: #7FCBE8; --foam: rgba(255, 255, 255, 0.55);
+    --isle: #66C28C; --isle2: #47A873; --sand: #F0D9A0;
+    --trunk: #A5713F; --leaf: #2F9464;
+    --path: #FFF7E0; --stars: 0;
+    --sign: #C08B4F; --sign2: #8F6134;
   }
   @media (prefers-color-scheme: dark) {
     :root:not([data-theme="light"]) {
-      --bg: #181D28;
-      --surface: #212836;
-      --sunken: #1C2230;
-      --ink: #F0EDE5;
-      --muted: #98A0AE;
-      --line: #313A4C;
-      --green: #3DC08D;
-      --green-soft: rgba(61, 192, 141, 0.15);
+      --bg: #151A28;
+      --surface: #202638;
+      --sunken: #1A2030;
+      --ink: #EFECE0;
+      --muted: #9BA0B0;
+      --line: #303850;
+      --green: #3EC08D;
+      --green-soft: rgba(62, 192, 141, 0.16);
       --yellow: #FFC155;
-      --yellow-soft: rgba(255, 193, 85, 0.14);
+      --yellow-soft: rgba(255, 193, 85, 0.15);
       --coral: #FF7D5E;
-      --coral-soft: rgba(255, 125, 94, 0.15);
+      --coral-soft: rgba(255, 125, 94, 0.16);
       --blue: #63ACF2;
-      --blue-soft: rgba(99, 172, 242, 0.15);
+      --blue-soft: rgba(99, 172, 242, 0.16);
       --purple: #AC85FF;
-      --purple-soft: rgba(172, 133, 255, 0.16);
-      --shadow: 0 14px 34px -16px rgba(0, 0, 0, 0.6);
-      --ring: rgba(61, 192, 141, 0.55);
+      --purple-soft: rgba(172, 133, 255, 0.18);
+      --shadow: 0 16px 36px -16px rgba(0, 0, 0, 0.62);
+      --ring: rgba(62, 192, 141, 0.55);
+      --sky1: #17244B; --sky2: #43305E;
+      --sun: #F2E6BC; --sun-glow: rgba(242, 230, 188, 0.28);
+      --sea: #1F4568; --wave: #2E5E88; --foam: rgba(255, 255, 255, 0.18);
+      --isle: #2F7A57; --isle2: #22604A; --sand: #C7A876;
+      --trunk: #7C5530; --leaf: #23724E;
+      --path: #E9DCA8; --stars: 1;
+      --sign: #A5723C; --sign2: #6F4A26;
     }
   }
   :root[data-theme="dark"] {
-    --bg: #181D28;
-    --surface: #212836;
-    --sunken: #1C2230;
-    --ink: #F0EDE5;
-    --muted: #98A0AE;
-    --line: #313A4C;
-    --green: #3DC08D;
-    --green-soft: rgba(61, 192, 141, 0.15);
+    --bg: #151A28;
+    --surface: #202638;
+    --sunken: #1A2030;
+    --ink: #EFECE0;
+    --muted: #9BA0B0;
+    --line: #303850;
+    --green: #3EC08D;
+    --green-soft: rgba(62, 192, 141, 0.16);
     --yellow: #FFC155;
-    --yellow-soft: rgba(255, 193, 85, 0.14);
+    --yellow-soft: rgba(255, 193, 85, 0.15);
     --coral: #FF7D5E;
-    --coral-soft: rgba(255, 125, 94, 0.15);
+    --coral-soft: rgba(255, 125, 94, 0.16);
     --blue: #63ACF2;
-    --blue-soft: rgba(99, 172, 242, 0.15);
+    --blue-soft: rgba(99, 172, 242, 0.16);
     --purple: #AC85FF;
-    --purple-soft: rgba(172, 133, 255, 0.16);
-    --shadow: 0 14px 34px -16px rgba(0, 0, 0, 0.6);
-    --ring: rgba(61, 192, 141, 0.55);
+    --purple-soft: rgba(172, 133, 255, 0.18);
+    --shadow: 0 16px 36px -16px rgba(0, 0, 0, 0.62);
+    --ring: rgba(62, 192, 141, 0.55);
+    --sky1: #17244B; --sky2: #43305E;
+    --sun: #F2E6BC; --sun-glow: rgba(242, 230, 188, 0.28);
+    --sea: #1F4568; --wave: #2E5E88; --foam: rgba(255, 255, 255, 0.18);
+    --isle: #2F7A57; --isle2: #22604A; --sand: #C7A876;
+    --trunk: #7C5530; --leaf: #23724E;
+    --path: #E9DCA8; --stars: 1;
+    --sign: #A5723C; --sign2: #6F4A26;
   }
 
   * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -85,284 +107,396 @@
     font-family: "Noto Sans SC", "PingFang SC", "Microsoft YaHei", sans-serif;
     font-size: 15px; line-height: 1.7; -webkit-font-smoothing: antialiased;
     overflow-x: hidden;
+    background-image: radial-gradient(color-mix(in srgb, var(--ink) 7%, transparent) 1px, transparent 1px);
+    background-size: 22px 22px;
   }
   button { font-family: inherit; cursor: pointer; border: none; background: none; color: inherit; }
-  button:focus-visible, a:focus-visible, input:focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; border-radius: 8px; }
+  button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; border-radius: 8px; }
   .en { font-family: "Baloo 2", "Noto Sans SC", sans-serif; }
+  svg { display: block; }
 
-  .app { max-width: 540px; margin: 0 auto; min-height: 100vh; padding-bottom: 92px; }
+  .app { max-width: 540px; margin: 0 auto; min-height: 100vh; padding-bottom: 96px; }
 
-  /* ── 顶部 HUD ─────────────────────────────────────── */
+  /* ── HUD ─────────────────────────────────────────── */
   .hud {
     position: sticky; top: 0; z-index: 40;
     background: color-mix(in srgb, var(--bg) 90%, transparent);
     backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
     border-bottom: 1px solid var(--line);
-    padding: 12px 18px; display: flex; align-items: center; gap: 10px;
+    padding: 11px 16px; display: flex; align-items: center; gap: 9px;
   }
-  .hud .logo { font-weight: 900; font-size: 16.5px; display: flex; align-items: center; gap: 7px; }
-  .hud .logo small { font-size: 10px; color: var(--muted); font-weight: 500; letter-spacing: 0.06em; }
+  .hud .logo { font-weight: 900; font-size: 16px; line-height: 1.25; }
+  .hud .logo small { display: block; font-size: 9.5px; color: var(--muted); font-weight: 500; letter-spacing: 0.08em; }
   .hud .sp { flex: 1; }
   .chipstat {
-    display: inline-flex; align-items: center; gap: 5px;
-    background: var(--surface); border: 1px solid var(--line); border-radius: 999px;
-    padding: 5px 12px; font-size: 13px; font-weight: 700;
+    display: inline-flex; align-items: center; gap: 6px;
+    background: var(--surface); border: 1.5px solid var(--line); border-radius: 999px;
+    padding: 4px 11px; font-size: 13px; font-weight: 800;
+    box-shadow: 0 2px 0 var(--line);
   }
-  .chipstat .en { font-size: 14px; }
-  .gear { font-size: 17px; padding: 5px 7px; border-radius: 10px; background: var(--surface); border: 1px solid var(--line); }
+  .coin { width: 15px; height: 15px; border-radius: 50%; background: radial-gradient(circle at 35% 30%, #FFE29A, var(--yellow) 70%); border: 1.5px solid #D89A22; flex: none; }
+  .flame { color: var(--coral); font-size: 13px; }
+  .gear { padding: 6px; border-radius: 11px; background: var(--surface); border: 1.5px solid var(--line); box-shadow: 0 2px 0 var(--line); color: var(--muted); }
 
-  .gradebar { display: flex; gap: 8px; padding: 14px 18px 4px; align-items: center; }
-  .gradebar span { font-size: 12.5px; color: var(--muted); margin-right: 2px; }
+  .gradebar { display: flex; gap: 8px; padding: 13px 16px 2px; align-items: center; }
+  .gradebar span { font-size: 12px; color: var(--muted); margin-right: 2px; }
   .gpill {
     border: 1.5px solid var(--line); background: var(--surface);
-    border-radius: 999px; padding: 5px 16px; font-size: 13.5px; font-weight: 700; color: var(--muted);
-    transition: all 0.15s;
+    border-radius: 999px; padding: 4px 15px; font-size: 13px; font-weight: 800; color: var(--muted);
+    box-shadow: 0 2px 0 var(--line); transition: all 0.15s;
   }
-  .gpill.on { background: var(--green); border-color: var(--green); color: #fff; }
+  .gpill.on { background: var(--green); border-color: color-mix(in srgb, var(--green) 70%, black); color: #fff; box-shadow: 0 2px 0 color-mix(in srgb, var(--green) 70%, black); }
 
-  .screen { display: none; padding: 14px 18px 20px; animation: fadein 0.25s ease; }
+  .screen { display: none; padding: 12px 16px 20px; animation: fadein 0.25s ease; }
   .screen.on { display: block; }
   @keyframes fadein { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
 
-  /* ── 通用卡片 ─────────────────────────────────────── */
+  /* ── 通用 ────────────────────────────────────────── */
   .card {
-    background: var(--surface); border: 1px solid var(--line); border-radius: 18px;
-    padding: 18px; margin-bottom: 14px;
+    background: var(--surface); border: 1.5px solid var(--line); border-radius: 20px;
+    padding: 18px; margin-bottom: 14px; box-shadow: 0 3px 0 var(--line);
   }
   .card h3 { font-size: 16px; font-weight: 900; display: flex; align-items: center; gap: 8px; }
   .hint { font-size: 12px; color: var(--muted); }
   .btn {
     display: inline-flex; align-items: center; justify-content: center; gap: 6px;
-    border-radius: 999px; padding: 11px 22px; font-size: 14px; font-weight: 700;
-    transition: transform 0.15s, box-shadow 0.15s, opacity 0.15s;
+    border-radius: 999px; padding: 11px 22px; font-size: 14px; font-weight: 800;
+    transition: transform 0.15s, filter 0.15s; border-bottom: 3px solid rgba(0, 0, 0, 0.22);
   }
-  .btn:active { transform: scale(0.96); }
+  .btn:active { transform: translateY(2px); border-bottom-width: 1px; }
   .btn-g { background: var(--green); color: #fff; }
   .btn-b { background: var(--blue); color: #fff; }
   .btn-p { background: var(--purple); color: #fff; }
   .btn-c { background: var(--coral); color: #fff; }
-  .btn-o { border: 1.5px solid var(--line); background: var(--surface); }
+  .btn-o { border: 1.5px solid var(--line); border-bottom: 3px solid var(--line); background: var(--surface); }
   .btn-sm { padding: 7px 15px; font-size: 12.5px; }
   .btn[disabled] { opacity: 0.45; cursor: not-allowed; }
+  .ic { width: 1.15em; height: 1.15em; flex: none; }
 
-  /* ── 今日任务 ─────────────────────────────────────── */
-  .unitbanner {
-    background: linear-gradient(120deg, var(--green) 0%, #37BC90 100%);
-    color: #fff; border-radius: 20px; padding: 20px; margin-bottom: 14px;
-    position: relative; overflow: hidden;
+  /* ── 岛屿场景 ────────────────────────────────────── */
+  .island-wrap {
+    position: relative; border-radius: 24px; overflow: hidden;
+    border: 1.5px solid var(--line); box-shadow: var(--shadow);
+    height: 430px; margin-bottom: 14px;
+    background: linear-gradient(180deg, var(--sky1), var(--sky2) 72%);
   }
-  .unitbanner::after {
-    content: "🏝️"; position: absolute; right: 10px; bottom: -14px; font-size: 74px; opacity: 0.3;
-  }
-  .unitbanner .tagline { font-size: 11.5px; opacity: 0.9; letter-spacing: 0.1em; font-weight: 700; }
-  .unitbanner h2 { font-size: 20px; font-weight: 900; margin: 4px 0 2px; }
-  .unitbanner .en-title { font-size: 14px; opacity: 0.95; }
-  .streakline {
-    display: flex; align-items: center; gap: 10px;
-    background: var(--coral-soft); border: 1px dashed var(--coral);
-    border-radius: 14px; padding: 10px 15px; font-size: 13px; font-weight: 700; margin-bottom: 14px;
-  }
-  .task {
-    display: flex; align-items: center; gap: 13px;
-    background: var(--surface); border: 1px solid var(--line); border-radius: 16px;
-    padding: 14px 15px; margin-bottom: 10px;
-  }
-  .task .ti { width: 42px; height: 42px; border-radius: 13px; display: grid; place-items: center; font-size: 20px; flex: none; }
-  .task .tt { flex: 1; min-width: 0; }
-  .task .tt b { font-size: 14.5px; display: block; }
-  .task .tt small { font-size: 12px; color: var(--muted); }
-  .task .pts { font-size: 12px; font-weight: 800; color: var(--yellow); white-space: nowrap; }
-  .task.done { opacity: 0.62; }
-  .task.done .go { display: none; }
-  .task .ok { display: none; font-size: 18px; }
-  .task.done .ok { display: block; }
+  .scene { position: absolute; inset: 0; width: 100%; height: 100%; }
+  .cloud { animation: drift 46s linear infinite alternate; }
+  .cloud.c2 { animation-duration: 64s; animation-delay: -20s; }
+  @keyframes drift { from { transform: translateX(-30px); } to { transform: translateX(46px); } }
+  .waves { animation: bob 7s ease-in-out infinite alternate; }
+  .waves.w2 { animation-duration: 9s; animation-delay: -3s; }
+  @keyframes bob { from { transform: translateX(-14px); } to { transform: translateX(14px); } }
+  .stars { opacity: var(--stars); transition: opacity 0.4s; }
+  .leafsway { transform-origin: 380px 132px; animation: sway 5s ease-in-out infinite alternate; }
+  @keyframes sway { from { transform: rotate(-2.4deg); } to { transform: rotate(2.6deg); } }
 
-  /* ── 单词学习 ─────────────────────────────────────── */
+  .signboard {
+    position: absolute; left: 14px; top: 14px; z-index: 3;
+    background: var(--sign); border: 2px solid var(--sign2); border-radius: 12px;
+    color: #FFF6E3; padding: 7px 14px 8px; box-shadow: 0 3px 0 var(--sign2);
+    max-width: 65%;
+  }
+  .signboard .u { font-size: 10px; letter-spacing: 0.18em; opacity: 0.85; font-weight: 800; }
+  .signboard b { display: block; font-size: 14.5px; font-weight: 900; line-height: 1.35; }
+  .signboard small { font-size: 11px; opacity: 0.9; }
+
+  .node {
+    position: absolute; z-index: 4; transform: translate(-50%, -50%);
+    width: 58px; text-align: center;
+  }
+  .node .nb {
+    width: 54px; height: 54px; border-radius: 50%; margin: 0 auto;
+    display: grid; place-items: center; color: #fff; position: relative;
+    border: 3px solid #fff; box-shadow: 0 4px 0 rgba(0, 0, 0, 0.25), var(--shadow);
+    transition: transform 0.15s;
+  }
+  .node .nb:active { transform: scale(0.94); }
+  .node .nb svg { width: 24px; height: 24px; }
+  .node .lbl {
+    display: inline-block; margin-top: 5px; font-size: 10.5px; font-weight: 900;
+    background: color-mix(in srgb, var(--bg) 88%, transparent);
+    border-radius: 999px; padding: 1px 8px; color: var(--ink); white-space: nowrap;
+  }
+  .node .done-badge {
+    position: absolute; right: -4px; top: -4px; width: 20px; height: 20px; border-radius: 50%;
+    background: var(--yellow); border: 2px solid #fff; display: none; place-items: center;
+  }
+  .node.is-done .done-badge { display: grid; }
+  .node.is-done .nb { filter: saturate(0.65) brightness(0.96); }
+  .node.is-cur .nb::after {
+    content: ""; position: absolute; inset: -9px; border-radius: 50%;
+    border: 3px solid #fff; opacity: 0.7; animation: pulse 1.6s ease-out infinite;
+  }
+  @keyframes pulse { from { transform: scale(0.82); opacity: 0.8; } to { transform: scale(1.12); opacity: 0; } }
+
+  .chestnode .nb { width: 62px; height: 62px; border-radius: 20px; background: linear-gradient(180deg, #C08B4F, #8F6134); }
+  .chestnode.ready .nb { animation: chestshake 1.4s ease-in-out infinite; }
+  @keyframes chestshake { 0%, 72%, 100% { transform: rotate(0); } 78% { transform: rotate(-5deg); } 86% { transform: rotate(5deg); } 93% { transform: rotate(-3deg); } }
+  .chestnode .nb svg { width: 34px; height: 34px; }
+  .chestnode[disabled] .nb { filter: grayscale(0.55) brightness(0.9); }
+
+  .isle-pet { position: absolute; left: 7%; bottom: 9%; width: 74px; z-index: 4; cursor: pointer; animation: idle 3.2s ease-in-out infinite; }
+  @keyframes idle { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
+  .isle-pet .say {
+    position: absolute; left: 58px; top: -14px; white-space: nowrap;
+    background: var(--surface); border: 1.5px solid var(--line); border-radius: 12px 12px 12px 3px;
+    font-size: 11px; font-weight: 800; padding: 4px 10px; color: var(--ink); box-shadow: 0 2px 0 var(--line);
+  }
+
+  .streakcard {
+    display: flex; align-items: center; gap: 12px;
+    background: var(--surface); border: 1.5px solid var(--line); border-radius: 18px;
+    padding: 13px 16px; margin-bottom: 12px; box-shadow: 0 3px 0 var(--line);
+    transform: rotate(-0.4deg);
+  }
+  .streakcard .fire {
+    width: 40px; height: 40px; border-radius: 13px; background: var(--coral-soft);
+    display: grid; place-items: center; color: var(--coral); flex: none;
+  }
+  .streakcard b { font-size: 14px; display: block; }
+  .streakcard small { font-size: 12px; color: var(--muted); }
+
+  /* ── 单词 ────────────────────────────────────────── */
   .modes { display: flex; gap: 8px; margin-bottom: 14px; flex-wrap: wrap; }
   .mode {
+    display: inline-flex; align-items: center; gap: 6px;
     border: 1.5px solid var(--line); background: var(--surface); border-radius: 999px;
-    padding: 7px 16px; font-size: 13px; font-weight: 700; color: var(--muted);
+    padding: 7px 15px; font-size: 13px; font-weight: 800; color: var(--muted);
+    box-shadow: 0 2px 0 var(--line);
   }
-  .mode.on { border-color: var(--green); color: var(--green); background: var(--green-soft); }
-  .wordcard { text-align: center; padding: 30px 20px 24px; }
-  .wordcard .w { font-size: 38px; font-weight: 800; }
-  .wordcard .ipa { color: var(--muted); font-size: 15px; margin: 2px 0 10px; }
+  .mode.on { border-color: var(--green); color: var(--green); background: var(--green-soft); box-shadow: 0 2px 0 var(--green); }
+  .wordcard { text-align: center; padding: 34px 20px 24px; position: relative; transform: rotate(-0.35deg); }
+  .tape {
+    position: absolute; left: 50%; top: -12px; transform: translateX(-50%) rotate(2deg);
+    width: 96px; height: 24px; background: var(--yellow); opacity: 0.75; border-radius: 3px;
+  }
+  .wordcard .w { font-size: 40px; font-weight: 800; letter-spacing: 0.01em; }
+  .wordcard .ipa { color: var(--muted); font-size: 15px; margin: 0 0 10px; }
   .speak {
+    display: inline-flex; align-items: center; gap: 7px;
     background: var(--blue-soft); color: var(--blue); border-radius: 999px;
-    padding: 7px 18px; font-size: 14px; font-weight: 700;
+    padding: 8px 18px; font-size: 13.5px; font-weight: 800; border: 1.5px solid var(--blue);
   }
-  .meaning { margin: 16px 0 4px; min-height: 66px; }
-  .meaning .m { font-size: 17px; font-weight: 700; }
+  .meaning { margin: 16px 0 4px; min-height: 64px; }
+  .meaning .m { font-size: 17px; font-weight: 800; }
   .meaning .ex { font-size: 13.5px; color: var(--muted); margin-top: 4px; }
   .meaning.hide .m, .meaning.hide .ex { filter: blur(7px); user-select: none; }
   .wc-btns { display: flex; gap: 10px; justify-content: center; margin-top: 14px; }
-  .dots { display: flex; gap: 5px; justify-content: center; margin-top: 16px; }
-  .dots i { width: 8px; height: 8px; border-radius: 50%; background: var(--line); }
+  .dots { display: flex; gap: 6px; justify-content: center; margin-top: 18px; }
+  .dots i { width: 9px; height: 9px; border-radius: 50%; background: var(--line); transition: all 0.2s; }
   .dots i.done { background: var(--green); }
-  .dots i.cur { background: var(--yellow); }
+  .dots i.cur { background: var(--yellow); transform: scale(1.35); }
 
   .spellrow { display: flex; gap: 8px; margin-top: 12px; }
   .spellrow input {
-    flex: 1; border: 1.5px solid var(--line); border-radius: 12px; background: var(--sunken);
+    flex: 1; min-width: 0; border: 1.5px solid var(--line); border-radius: 13px; background: var(--sunken);
     padding: 11px 14px; font-size: 16px; color: var(--ink); font-family: "Baloo 2", sans-serif; font-weight: 700;
     letter-spacing: 0.06em;
   }
   .spellrow input:focus { outline: none; border-color: var(--green); }
-  .feedback { min-height: 22px; font-size: 13px; font-weight: 700; margin-top: 8px; }
+  .feedback { min-height: 22px; font-size: 13px; font-weight: 800; margin-top: 8px; }
   .feedback.good { color: var(--green); }
   .feedback.bad { color: var(--coral); }
 
-  .sent { display: flex; align-items: flex-start; gap: 10px; padding: 10px 0; border-bottom: 1px dashed var(--line); }
+  .sent { display: flex; align-items: flex-start; gap: 9px; padding: 10px 0; border-bottom: 1.5px dashed var(--line); }
   .sent:last-child { border-bottom: none; }
   .sent p { flex: 1; font-size: 14.5px; }
-  .sent .zh { font-size: 12px; color: var(--muted); }
-  .sent button { flex: none; }
-  .sent.readed p { color: var(--green); }
+  .sent.readed p { color: var(--green); font-weight: 700; }
 
-  /* ── 情景岛 ───────────────────────────────────────── */
+  /* ── 情景 ────────────────────────────────────────── */
   .scen {
     display: flex; align-items: center; gap: 13px;
-    background: var(--surface); border: 1px solid var(--line); border-radius: 16px;
-    padding: 15px; margin-bottom: 10px;
+    background: var(--surface); border: 1.5px solid var(--line); border-radius: 18px;
+    padding: 14px 15px; margin-bottom: 10px; box-shadow: 0 3px 0 var(--line);
   }
-  .scen .si { width: 44px; height: 44px; border-radius: 13px; background: var(--blue-soft); display: grid; place-items: center; font-size: 21px; flex: none; }
+  .scen .si { width: 46px; height: 46px; border-radius: 14px; display: grid; place-items: center; flex: none; }
   .scen b { display: block; font-size: 14.5px; }
   .scen small { color: var(--muted); font-size: 12px; }
-  .scen .lock { margin-left: auto; color: var(--muted); font-size: 13px; }
+  .scen .lock { margin-left: auto; color: var(--muted); }
+  .shopband {
+    position: relative; border-radius: 18px 18px 0 0; overflow: hidden;
+    margin: -18px -18px 14px; height: 96px;
+  }
   .chat { display: flex; flex-direction: column; gap: 10px; margin: 6px 0 14px; }
-  .bub { max-width: 84%; padding: 10px 14px; border-radius: 16px; font-size: 14px; position: relative; }
-  .bub.npc { background: var(--sunken); border: 1px solid var(--line); align-self: flex-start; border-bottom-left-radius: 5px; }
-  .bub.me { background: var(--blue); color: #fff; align-self: flex-end; border-bottom-right-radius: 5px; }
-  .bub .role { font-size: 10.5px; color: var(--muted); display: block; margin-bottom: 2px; }
-  .bub.me .role { color: rgba(255, 255, 255, 0.75); }
-  .bub .sp2 { background: none; padding: 0 4px; font-size: 13px; }
+  .msg { display: flex; gap: 8px; align-items: flex-end; }
+  .msg.me { flex-direction: row-reverse; }
+  .ava { width: 34px; height: 34px; border-radius: 50%; flex: none; overflow: hidden; border: 2px solid var(--line); background: #FFE1B8; }
+  .bub { max-width: 76%; padding: 9px 13px; border-radius: 15px; font-size: 14px; }
+  .bub.npc { background: var(--sunken); border: 1.5px solid var(--line); border-bottom-left-radius: 4px; }
+  .bub.mebub { background: var(--blue); color: #fff; border-bottom-right-radius: 4px; }
+  .bub .sp2 { background: none; padding: 0 3px; font-size: 12px; vertical-align: middle; color: var(--blue); }
   .choices { display: grid; gap: 8px; }
   .choice {
-    text-align: left; border: 1.5px solid var(--line); background: var(--surface);
-    border-radius: 13px; padding: 11px 14px; font-size: 14px; transition: all 0.15s;
+    text-align: left; border: 1.5px solid var(--line); border-bottom-width: 3px; background: var(--surface);
+    border-radius: 14px; padding: 11px 14px; font-size: 14px; transition: all 0.15s;
   }
   .choice:hover { border-color: var(--blue); }
   .choice.bad { border-color: var(--coral); background: var(--coral-soft); animation: shake 0.3s; }
   @keyframes shake { 25% { transform: translateX(-4px); } 75% { transform: translateX(4px); } }
-  .tip { font-size: 12.5px; color: var(--coral); font-weight: 700; min-height: 20px; margin-top: 6px; }
+  .tip { font-size: 12.5px; color: var(--coral); font-weight: 800; min-height: 20px; margin-top: 6px; }
 
-  /* ── 宠物屋 ───────────────────────────────────────── */
-  .petstage {
-    background: linear-gradient(180deg, var(--green-soft), transparent 70%);
-    border: 1px solid var(--line); border-radius: 20px; padding: 22px 18px 16px;
-    text-align: center; margin-bottom: 14px;
+  /* ── 宠物屋 ──────────────────────────────────────── */
+  .petroom {
+    position: relative; border-radius: 22px; border: 1.5px solid var(--line);
+    overflow: hidden; margin-bottom: 14px; box-shadow: var(--shadow);
+    background:
+      linear-gradient(180deg, color-mix(in srgb, var(--green-soft) 70%, var(--surface)) 0%, var(--surface) 58%),
+      var(--surface);
+    text-align: center; padding: 24px 16px 18px;
   }
-  .pet { width: 130px; margin: 0 auto; transition: transform 0.2s; }
-  .pet.jump { animation: jump 0.5s ease; }
-  @keyframes jump { 30% { transform: translateY(-16px) scale(1.04); } 60% { transform: translateY(0); } 80% { transform: translateY(-6px); } }
-  .pet .blink { animation: blink 4s infinite; transform-origin: center; }
-  @keyframes blink { 0%, 94%, 100% { transform: scaleY(1); } 96% { transform: scaleY(0.1); } }
-  .petname { font-weight: 900; font-size: 16px; margin-top: 6px; }
+  .petroom::before {
+    content: ""; position: absolute; left: 50%; bottom: 54px; transform: translateX(-50%);
+    width: 240px; height: 46px; border-radius: 50%;
+    background: var(--green-soft);
+  }
+  .bigpet { width: 150px; margin: 0 auto; position: relative; z-index: 2; }
+  .bigpet.jump { animation: jump 0.55s ease; }
+  @keyframes jump { 30% { transform: translateY(-18px) scale(1.05); } 60% { transform: translateY(0); } 80% { transform: translateY(-7px); } }
+  .pet-svg .blink { animation: blink 4.2s infinite; transform-origin: center; }
+  @keyframes blink { 0%, 93%, 100% { transform: scaleY(1); } 95.5% { transform: scaleY(0.08); } }
+  .pet-svg .sprout { transform-origin: 70px 22px; animation: sway 3.6s ease-in-out infinite alternate; }
+  .pet-svg .mouth-open { display: none; }
+  .munch .pet-svg .mouth-open { display: block; }
+  .munch .pet-svg .mouth-smile { display: none; }
+  .petname { font-weight: 900; font-size: 16px; margin-top: 4px; position: relative; z-index: 2; }
   .petname .lv { color: var(--green); font-size: 13px; }
-  .expbar { height: 10px; background: var(--sunken); border-radius: 99px; overflow: hidden; margin: 8px auto 4px; max-width: 240px; border: 1px solid var(--line); }
-  .expbar i { display: block; height: 100%; background: linear-gradient(90deg, var(--green), #58CBA1); border-radius: 99px; transition: width 0.4s; }
-  .petacts { display: flex; gap: 10px; justify-content: center; margin-top: 12px; }
-  .inv { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; justify-content: center; }
+  .expbar { height: 12px; background: var(--sunken); border-radius: 99px; overflow: hidden; margin: 8px auto 4px; max-width: 250px; border: 1.5px solid var(--line); position: relative; z-index: 2; }
+  .expbar i { display: block; height: 100%; background: linear-gradient(90deg, var(--green), #6ED9A8); border-radius: 99px; transition: width 0.4s; }
+  .petacts { display: flex; gap: 9px; justify-content: center; margin-top: 12px; flex-wrap: wrap; position: relative; z-index: 2; }
+  .inv { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; justify-content: center; position: relative; z-index: 2; }
   .invitem {
-    display: inline-flex; align-items: center; gap: 5px; font-size: 12.5px; font-weight: 700;
-    background: var(--surface); border: 1px solid var(--line); border-radius: 999px; padding: 5px 12px;
+    display: inline-flex; align-items: center; gap: 5px; font-size: 12.5px; font-weight: 800;
+    background: var(--surface); border: 1.5px solid var(--line); border-radius: 999px; padding: 4px 12px;
+    box-shadow: 0 2px 0 var(--line);
   }
-  .heartfloat { position: absolute; font-size: 18px; animation: floatup 0.9s ease forwards; pointer-events: none; }
-  @keyframes floatup { to { transform: translateY(-42px); opacity: 0; } }
+  .heartfloat { position: absolute; font-size: 19px; animation: floatup 0.95s ease forwards; pointer-events: none; z-index: 6; }
+  @keyframes floatup { to { transform: translateY(-48px); opacity: 0; } }
 
-  .boxmachine { text-align: center; background: linear-gradient(135deg, var(--purple-soft), transparent); }
-  .boxvis { font-size: 56px; display: inline-block; margin: 8px 0; }
-  .boxvis.shake { animation: boxshake 0.8s ease; }
-  @keyframes boxshake { 15% { transform: rotate(-9deg); } 30% { transform: rotate(8deg); } 45% { transform: rotate(-7deg) scale(1.06); } 60% { transform: rotate(6deg) scale(1.1); } 80% { transform: rotate(-3deg) scale(1.13); } }
+  .gachacard { text-align: center; overflow: visible; }
+  .gacha { width: 170px; margin: 4px auto 2px; }
+  .gacha .knob { transform-origin: 85px 150px; transition: transform 0.5s; }
+  .gacha.rolling .knob { transform: rotate(180deg); }
+  .gacha.rolling .dome-caps { animation: capsjiggle 0.8s ease-in-out; }
+  @keyframes capsjiggle { 25% { transform: translateY(-4px) rotate(2deg); } 55% { transform: translateY(2px) rotate(-2deg); } 80% { transform: translateY(-2px); } }
+  .capsule-drop {
+    position: absolute; left: 50%; transform: translateX(-50%); width: 30px; height: 30px;
+    animation: capdrop 0.55s cubic-bezier(0.3, 0, 0.6, 1.4) forwards;
+    pointer-events: none;
+  }
+  @keyframes capdrop { from { opacity: 0; margin-top: -46px; } 60% { opacity: 1; } to { margin-top: 8px; opacity: 1; } }
   .rates { font-size: 11.5px; color: var(--muted); margin-top: 8px; }
-  .pity { font-size: 12px; font-weight: 700; color: var(--purple); margin-top: 3px; }
+  .pity { font-size: 12px; font-weight: 800; color: var(--purple); margin-top: 3px; }
 
   .friends { display: flex; gap: 12px; margin-top: 12px; }
-  .friend { flex: 1; text-align: center; background: var(--sunken); border: 1px solid var(--line); border-radius: 15px; padding: 12px 8px; position: relative; }
-  .friend .fp { font-size: 30px; }
+  .friend { flex: 1; text-align: center; background: var(--sunken); border: 1.5px solid var(--line); border-radius: 16px; padding: 12px 8px 10px; position: relative; }
+  .friend .fp { width: 44px; height: 44px; margin: 0 auto 4px; border-radius: 50%; display: grid; place-items: center; }
   .friend b { display: block; font-size: 12.5px; }
-  .friend small { color: var(--muted); font-size: 11px; display: block; margin-bottom: 6px; }
+  .friend small { color: var(--muted); font-size: 11px; display: block; margin-bottom: 7px; }
 
-  /* ── 动画片 ───────────────────────────────────────── */
-  .gate { border-radius: 16px; padding: 14px 16px; font-size: 13.5px; font-weight: 700; margin-bottom: 14px; display: flex; gap: 10px; align-items: center; }
-  .gate.open { background: var(--green-soft); border: 1px dashed var(--green); color: var(--green); }
-  .gate.closed { background: var(--coral-soft); border: 1px dashed var(--coral); color: var(--coral); }
+  /* ── 动画片 ──────────────────────────────────────── */
+  .gate { border-radius: 18px; padding: 13px 16px; font-size: 13.5px; font-weight: 800; margin-bottom: 14px; display: flex; gap: 11px; align-items: center; border: 2px dashed; }
+  .gate.open { background: var(--green-soft); border-color: var(--green); color: var(--green); }
+  .gate.closed { background: var(--coral-soft); border-color: var(--coral); color: var(--coral); }
   .gate small { display: block; font-weight: 500; color: var(--muted); font-size: 12px; }
+  .gate .gi { flex: none; width: 34px; height: 34px; border-radius: 50%; display: grid; place-items: center; background: var(--surface); }
   .epis { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-  .epi { border-radius: 16px; overflow: hidden; border: 1px solid var(--line); background: var(--surface); position: relative; }
-  .epi .cover { height: 86px; display: grid; place-items: center; font-size: 30px; color: #fff; }
-  .epi .nm { padding: 8px 12px 10px; font-size: 12.5px; font-weight: 700; }
+  .epi { border-radius: 18px; overflow: hidden; border: 1.5px solid var(--line); background: var(--surface); position: relative; box-shadow: 0 3px 0 var(--line); }
+  .epi .cover { height: 92px; position: relative; overflow: hidden; }
+  .epi .cover svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+  .epi .nm { padding: 8px 12px 10px; font-size: 12.5px; font-weight: 800; }
   .epi .nm small { display: block; color: var(--muted); font-weight: 500; font-size: 11px; }
   .epi .lockov {
-    position: absolute; inset: 0; background: color-mix(in srgb, var(--bg) 62%, transparent);
-    backdrop-filter: blur(2.5px); -webkit-backdrop-filter: blur(2.5px);
-    display: grid; place-items: center; font-size: 24px;
+    position: absolute; inset: 0; background: color-mix(in srgb, var(--bg) 60%, transparent);
+    backdrop-filter: blur(3px); -webkit-backdrop-filter: blur(3px);
+    display: grid; place-items: center; color: var(--ink);
   }
 
-  /* ── 弹层 / 提示 ──────────────────────────────────── */
+  /* ── 弹层 ────────────────────────────────────────── */
   .veil {
-    position: fixed; inset: 0; background: rgba(20, 18, 14, 0.45); z-index: 90;
+    position: fixed; inset: 0; background: rgba(22, 18, 10, 0.5); z-index: 90;
     display: none; align-items: flex-end; justify-content: center; padding: 18px;
   }
   .veil.on { display: flex; }
   .sheet {
-    background: var(--surface); border: 1px solid var(--line); border-radius: 22px;
+    background: var(--surface); border: 1.5px solid var(--line); border-radius: 24px;
     width: 100%; max-width: 480px; padding: 24px; box-shadow: var(--shadow);
-    animation: pop 0.25s ease; max-height: 82vh; overflow-y: auto;
+    animation: pop 0.25s ease; max-height: 84vh; overflow-y: auto;
   }
   @keyframes pop { from { transform: translateY(24px); opacity: 0; } to { transform: none; opacity: 1; } }
   .sheet h3 { font-size: 17px; font-weight: 900; margin-bottom: 12px; }
-  .setrow { display: flex; align-items: center; gap: 12px; padding: 12px 0; border-bottom: 1px dashed var(--line); }
+  .setrow { display: flex; align-items: center; gap: 12px; padding: 12px 0; border-bottom: 1.5px dashed var(--line); }
   .setrow .st { flex: 1; }
   .setrow b { font-size: 14px; display: block; }
   .setrow small { font-size: 12px; color: var(--muted); }
   .switch { width: 46px; height: 26px; border-radius: 99px; background: var(--line); position: relative; transition: background 0.2s; flex: none; }
-  .switch::after { content: ""; position: absolute; top: 3px; left: 3px; width: 20px; height: 20px; border-radius: 50%; background: #fff; transition: left 0.2s; box-shadow: 0 1px 4px rgba(0,0,0,0.25); }
+  .switch::after { content: ""; position: absolute; top: 3px; left: 3px; width: 20px; height: 20px; border-radius: 50%; background: #fff; transition: left 0.2s; box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3); }
   .switch.on { background: var(--green); }
   .switch.on::after { left: 23px; }
 
   .reveal-item { text-align: center; padding: 8px 0 4px; }
-  .reveal-item .big { font-size: 62px; animation: pop 0.3s ease; }
-  .rar { display: inline-block; font-size: 12px; font-weight: 800; border-radius: 999px; padding: 4px 14px; margin-top: 6px; }
+  .reveal-item .big { font-size: 60px; animation: pop 0.3s ease; }
+  .rar { display: inline-block; font-size: 12px; font-weight: 800; border-radius: 999px; padding: 4px 14px; margin-top: 6px; color: #fff; }
 
   #toast {
-    position: fixed; left: 50%; bottom: 104px; transform: translateX(-50%) translateY(20px);
+    position: fixed; left: 50%; bottom: 106px; transform: translateX(-50%) translateY(20px);
     background: var(--ink); color: var(--bg); border-radius: 999px; padding: 9px 20px;
-    font-size: 13.5px; font-weight: 700; opacity: 0; transition: all 0.25s; z-index: 99;
+    font-size: 13.5px; font-weight: 800; opacity: 0; transition: all 0.25s; z-index: 99;
     pointer-events: none; white-space: nowrap; max-width: 92vw;
   }
   #toast.on { opacity: 1; transform: translateX(-50%) translateY(0); }
+  .confetti-bit { position: fixed; z-index: 95; width: 9px; height: 13px; border-radius: 2px; pointer-events: none; animation: cfall 1.15s ease-in forwards; }
+  @keyframes cfall { to { transform: translateY(52vh) rotate(540deg); opacity: 0; } }
 
-  /* ── 底部标签栏 ───────────────────────────────────── */
+  /* ── 底部标签栏 ──────────────────────────────────── */
   .tabbar {
     position: fixed; bottom: 0; left: 0; right: 0; z-index: 50;
-    background: color-mix(in srgb, var(--surface) 94%, transparent);
+    background: color-mix(in srgb, var(--surface) 95%, transparent);
     backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
-    border-top: 1px solid var(--line);
+    border-top: 1.5px solid var(--line);
   }
   .tabbar .in { max-width: 540px; margin: 0 auto; display: flex; }
-  .tab { flex: 1; padding: 9px 4px 10px; text-align: center; color: var(--muted); font-size: 11px; font-weight: 700; }
-  .tab .ic { font-size: 20px; display: block; line-height: 1.3; filter: grayscale(1) opacity(0.65); }
+  .tab { flex: 1; padding: 8px 4px 9px; text-align: center; color: var(--muted); font-size: 10.5px; font-weight: 800; }
+  .tab svg { width: 23px; height: 23px; margin: 0 auto 1px; }
   .tab.on { color: var(--green); }
-  .tab.on .ic { filter: none; }
+  .tab.on svg { filter: drop-shadow(0 3px 5px var(--green-soft)); }
 
   @media (prefers-reduced-motion: reduce) {
     * { animation: none !important; transition: none !important; }
   }
-  @media (max-width: 400px) {
-    .wordcard .w { font-size: 31px; }
+  @media (max-width: 420px) {
+    .island-wrap { height: 400px; }
+    .wordcard .w { font-size: 32px; }
     .friends { flex-wrap: wrap; }
+    .node { width: 52px; }
+    .node .nb { width: 48px; height: 48px; }
   }
 </style>
 
+<!-- 图标库 -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <g id="i-map"><path d="M3 6.5 9 4l6 2.5L21 4v13.5L15 20l-6-2.5L3 20zM9 4v13.5M15 6.5V20" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></g>
+    <g id="i-book"><path d="M4 5.5C6 4.3 8.5 4.3 12 6c3.5-1.7 6-1.7 8-.5V18c-2-1.2-4.5-1.2-8 .5-3.5-1.7-6-1.7-8-.5zM12 6v12.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/></g>
+    <g id="i-chat"><path d="M4 5h13a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2H10l-4.5 3.5V15H4a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" transform="translate(1.5 0.5)"/><circle cx="9.5" cy="10.5" r="1.1" fill="currentColor"/><circle cx="13.5" cy="10.5" r="1.1" fill="currentColor"/><circle cx="17.5" cy="10.5" r="1.1" fill="currentColor"/></g>
+    <g id="i-paw"><ellipse cx="7.2" cy="9" rx="2" ry="2.6" fill="currentColor"/><ellipse cx="12" cy="7.4" rx="2" ry="2.6" fill="currentColor"/><ellipse cx="16.8" cy="9" rx="2" ry="2.6" fill="currentColor"/><path d="M12 11.5c3 0 5.6 2.2 5.6 4.6 0 1.6-1.2 2.6-2.7 2.6-1.1 0-1.9-.5-2.9-.5s-1.8.5-2.9.5c-1.5 0-2.7-1-2.7-2.6 0-2.4 2.6-4.6 5.6-4.6z" fill="currentColor"/></g>
+    <g id="i-tv"><rect x="3" y="6.5" width="18" height="12" rx="2.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9 3.5l3 3 3-3" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M10.3 10.2l4.4 2.3-4.4 2.3z" fill="currentColor"/></g>
+    <g id="i-mic"><rect x="9" y="3" width="6" height="11" rx="3" fill="none" stroke="currentColor" stroke-width="2"/><path d="M5.5 11.5a6.5 6.5 0 0 0 13 0M12 18v3" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></g>
+    <g id="i-pen"><path d="M5 19l1-4L16.5 4.5a2.1 2.1 0 0 1 3 3L9 18zM14.5 6.5l3 3" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/></g>
+    <g id="i-chest"><rect x="3" y="8" width="18" height="11" rx="2" fill="#FFE3A9" stroke="#6F4A26" stroke-width="1.6"/><path d="M3 12h18" stroke="#6F4A26" stroke-width="1.6"/><path d="M5 8c0-2.8 3-4.5 7-4.5S19 5.2 19 8" fill="#FFD166" stroke="#6F4A26" stroke-width="1.6"/><rect x="10.4" y="10" width="3.2" height="4.6" rx="1" fill="#6F4A26"/></g>
+    <g id="i-gear"><circle cx="12" cy="12" r="3.2" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 2.8v3M12 18.2v3M21.2 12h-3M5.8 12h-3M18.5 5.5l-2.1 2.1M7.6 16.4l-2.1 2.1M18.5 18.5l-2.1-2.1M7.6 7.6 5.5 5.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></g>
+    <g id="i-lock"><rect x="5.5" y="10.5" width="13" height="9" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8.5 10.5V8a3.5 3.5 0 0 1 7 0v2.5" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="15" r="1.4" fill="currentColor"/></g>
+    <g id="i-play"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2"/><path d="M10 8.6l6 3.4-6 3.4z" fill="currentColor"/></g>
+  </defs>
+</svg>
+
 <div class="app">
-  <!-- HUD -->
   <div class="hud">
-    <div class="logo">🏝️ <span>萌宠英语岛<br><small>牛津译林版 · 演示原型</small></span></div>
+    <div class="logo">🏝️ 萌宠英语岛<small>牛津译林版 · 演示原型</small></div>
     <div class="sp"></div>
-    <span class="chipstat">🪙 <span class="en" id="hud-pts">0</span></span>
-    <span class="chipstat">🔥 <span class="en" id="hud-streak">0</span>天</span>
-    <button class="gear" id="btn-parent" aria-label="家长中心">⚙️</button>
+    <span class="chipstat"><span class="coin"></span><span class="en" id="hud-pts">0</span></span>
+    <span class="chipstat"><span class="flame">🔥</span><span class="en" id="hud-streak">0</span></span>
+    <button class="gear" id="btn-parent" aria-label="家长中心"><svg class="ic" viewBox="0 0 24 24"><use href="#i-gear"/></svg></button>
   </div>
 
   <div class="gradebar" role="tablist" aria-label="年级">
@@ -372,62 +506,117 @@
     <button class="gpill" data-g="9">九年级</button>
   </div>
 
-  <!-- ══ 今日任务 ══ -->
+  <!-- ══ 今日 · 岛屿地图 ══ -->
   <div class="screen" id="scr-home">
-    <div class="unitbanner">
-      <div class="tagline">本周单元 · UNIT 1</div>
-      <h2 id="ub-zh">新学期,认识我!</h2>
-      <div class="en-title en" id="ub-en">This is me!</div>
+    <div class="island-wrap">
+      <svg class="scene" viewBox="0 0 540 430" preserveAspectRatio="xMidYMid slice" aria-label="学习岛地图">
+        <g class="stars" fill="#FFF7D6">
+          <circle cx="60" cy="40" r="1.6"/><circle cx="150" cy="26" r="1.2"/><circle cx="230" cy="58" r="1.5"/>
+          <circle cx="330" cy="30" r="1.2"/><circle cx="470" cy="52" r="1.6"/><circle cx="400" cy="20" r="1.1"/>
+          <circle cx="90" cy="90" r="1.1"/><circle cx="510" cy="100" r="1.2"/><circle cx="280" cy="14" r="1.3"/>
+        </g>
+        <circle cx="462" cy="64" r="34" fill="var(--sun-glow)"/>
+        <circle cx="462" cy="64" r="22" fill="var(--sun)"/>
+        <g class="cloud" fill="#FFFFFF" opacity="0.9">
+          <ellipse cx="110" cy="70" rx="34" ry="13"/><ellipse cx="140" cy="62" rx="24" ry="11"/><ellipse cx="86" cy="62" rx="18" ry="9"/>
+        </g>
+        <g class="cloud c2" fill="#FFFFFF" opacity="0.75">
+          <ellipse cx="330" cy="98" rx="30" ry="11"/><ellipse cx="356" cy="90" rx="20" ry="9"/>
+        </g>
+        <!-- 海 -->
+        <rect x="0" y="318" width="540" height="112" fill="var(--sea)"/>
+        <path class="waves" d="M-40 322 Q-20 314 0 322 T40 322 T80 322 T120 322 T160 322 T200 322 T240 322 T280 322 T320 322 T360 322 T400 322 T440 322 T480 322 T520 322 T560 322 T600 322 V340 H-40 Z" fill="var(--wave)"/>
+        <path class="waves w2" d="M-40 340 Q-20 333 0 340 T40 340 T80 340 T120 340 T160 340 T200 340 T240 340 T280 340 T320 340 T360 340 T400 340 T440 340 T480 340 T520 340 T560 340 T600 340 V352 H-40 Z" fill="var(--foam)"/>
+        <!-- 岛 -->
+        <path d="M52 344 C60 250 150 152 272 134 C398 116 492 196 500 282 C504 330 462 356 392 368 C296 384 130 382 84 362 C64 354 50 352 52 344 Z" fill="var(--sand)"/>
+        <path d="M66 336 C76 252 158 164 272 148 C388 132 476 202 484 278 C488 320 452 344 388 355 C298 370 140 368 96 350 C78 344 64 344 66 336 Z" fill="var(--isle)"/>
+        <path d="M120 340 C210 356 330 356 420 342 C430 352 420 358 388 362 C298 375 150 373 112 356 C106 350 110 344 120 340 Z" fill="var(--isle2)" opacity="0.55"/>
+        <!-- 装饰:灌木/石头/小旗 -->
+        <ellipse cx="150" cy="238" rx="20" ry="12" fill="var(--isle2)"/>
+        <ellipse cx="172" cy="232" rx="13" ry="9" fill="var(--leaf)"/>
+        <ellipse cx="452" cy="270" rx="16" ry="10" fill="var(--isle2)"/>
+        <circle cx="236" cy="316" r="7" fill="var(--sand)" opacity="0.9"/>
+        <circle cx="250" cy="320" r="4.5" fill="var(--sand)" opacity="0.7"/>
+        <!-- 棕榈树 -->
+        <g class="leafsway">
+          <path d="M376 214 C372 186 374 158 380 132" fill="none" stroke="var(--trunk)" stroke-width="9" stroke-linecap="round"/>
+          <path d="M380 132 C360 122 338 122 322 134 C344 136 362 140 380 132 Z" fill="var(--leaf)"/>
+          <path d="M380 132 C398 118 422 116 440 126 C420 132 400 138 380 132 Z" fill="var(--leaf)"/>
+          <path d="M380 132 C370 112 372 94 384 82 C386 100 386 116 380 132 Z" fill="var(--leaf)"/>
+          <path d="M380 132 C396 120 402 102 398 86 C388 102 382 116 380 132 Z" fill="var(--isle2)"/>
+          <circle cx="374" cy="140" r="6" fill="#8F6134"/><circle cx="388" cy="142" r="6" fill="#8F6134"/>
+        </g>
+        <path d="M470 236 v-40 l22 8 -22 8" fill="var(--coral)" stroke="var(--sign2)" stroke-width="3" stroke-linejoin="round"/>
+        <!-- 任务路径 -->
+        <path id="trail" d="M96 318 C140 316 168 300 210 284 C258 266 306 268 344 248 C382 228 330 206 288 198 C252 190 240 174 264 158 C286 142 330 146 368 138"
+              fill="none" stroke="var(--path)" stroke-width="7" stroke-linecap="round" stroke-dasharray="1 16" opacity="0.95"/>
+      </svg>
+
+      <div class="signboard">
+        <span class="u en" id="ub-u">UNIT 1</span>
+        <b id="ub-zh">新学期,认识我!</b>
+        <small class="en" id="ub-en">This is me!</small>
+      </div>
+
+      <!-- 任务节点(位置对应 trail 路径) -->
+      <button class="node" id="n-w" style="left:17.8%; top:74%;" data-nav="words">
+        <span class="nb" style="background: var(--green);"><svg viewBox="0 0 24 24"><use href="#i-book"/></svg>
+          <span class="done-badge">✓</span></span>
+        <span class="lbl">学单词 +20</span>
+      </button>
+      <button class="node" id="n-r" style="left:44%; top:63%;" data-nav="words" data-mode="read">
+        <span class="nb" style="background: var(--yellow);"><svg viewBox="0 0 24 24"><use href="#i-mic"/></svg>
+          <span class="done-badge">✓</span></span>
+        <span class="lbl">跟读 +15</span>
+      </button>
+      <button class="node" id="n-s" style="left:63.5%; top:56%;" data-nav="scen">
+        <span class="nb" style="background: var(--blue);"><svg viewBox="0 0 24 24"><use href="#i-chat"/></svg>
+          <span class="done-badge">✓</span></span>
+        <span class="lbl">情景对话 +25</span>
+      </button>
+      <button class="node" id="n-q" style="left:50%; top:41.5%;">
+        <span class="nb" style="background: var(--purple);"><svg viewBox="0 0 24 24"><use href="#i-pen"/></svg>
+          <span class="done-badge">✓</span></span>
+        <span class="lbl">单元小测 +20</span>
+      </button>
+      <button class="node chestnode" id="n-b" style="left:70%; top:29%;" disabled>
+        <span class="nb"><svg viewBox="0 0 24 24"><use href="#i-chest"/></svg></span>
+        <span class="lbl" id="chest-lbl">今日宝箱 +30</span>
+      </button>
+
+      <div class="isle-pet" id="isle-pet" role="button" aria-label="宠物团团">
+        <span class="say" id="pet-say">今天也一起加油呀!</span>
+        <span class="pet-holder"></span>
+      </div>
     </div>
-    <div class="streakline">🔥 连续学习 <span class="en" id="streak2">5</span> 天 · 再坚持 2 天领「风味粮 ×1」</div>
-    <div class="task" id="task-w">
-      <div class="ti" style="background: var(--green-soft)">📖</div>
-      <div class="tt"><b>学 8 个新单词</b><small>Unit 1 核心词汇</small></div>
-      <span class="pts">+20</span>
-      <button class="btn btn-g btn-sm go" data-nav="words">去完成</button><span class="ok">✅</span>
+
+    <div class="streakcard">
+      <span class="fire">🔥</span>
+      <div style="flex:1;"><b>连续学习 <span class="en" id="streak2">5</span> 天</b><small>再坚持 2 天领「风味粮 ×1」</small></div>
     </div>
-    <div class="task" id="task-r">
-      <div class="ti" style="background: var(--yellow-soft)">🗣️</div>
-      <div class="tt"><b>课文跟读</b><small>原创同主题短文 · 5 句</small></div>
-      <span class="pts">+15</span>
-      <button class="btn btn-g btn-sm go" data-nav="words" data-mode="read">去完成</button><span class="ok">✅</span>
-    </div>
-    <div class="task" id="task-s">
-      <div class="ti" style="background: var(--blue-soft)">💬</div>
-      <div class="tt"><b>情景对话 · 在快餐店</b><small>场景中开口练英语</small></div>
-      <span class="pts">+25</span>
-      <button class="btn btn-b btn-sm go" data-nav="scen">去完成</button><span class="ok">✅</span>
-    </div>
-    <div class="task" id="task-q">
-      <div class="ti" style="background: var(--purple-soft)">📝</div>
-      <div class="tt"><b>单元小测</b><small>3 道题,检验今天的学习</small></div>
-      <span class="pts">+20</span>
-      <button class="btn btn-p btn-sm go" id="btn-quiz">去完成</button><span class="ok">✅</span>
-    </div>
-    <p class="hint" style="margin-top: 10px;">※ 复习任务由间隔重复(SRS)自动排入,正式版按遗忘曲线滚动出现。</p>
+    <p class="hint">※ 完成岛上 4 个任务点亮宝箱;复习任务由间隔重复(SRS)自动排入,正式版按遗忘曲线滚动出现。</p>
   </div>
 
   <!-- ══ 学单词 ══ -->
   <div class="screen" id="scr-words">
     <div class="modes">
-      <button class="mode on" data-m="learn">📖 认单词</button>
-      <button class="mode" data-m="spell">⌨️ 拼写挑战</button>
-      <button class="mode" data-m="read">🗣️ 课文跟读</button>
+      <button class="mode on" data-m="learn"><svg class="ic" viewBox="0 0 24 24"><use href="#i-book"/></svg>认单词</button>
+      <button class="mode" data-m="spell"><svg class="ic" viewBox="0 0 24 24"><use href="#i-pen"/></svg>拼写挑战</button>
+      <button class="mode" data-m="read"><svg class="ic" viewBox="0 0 24 24"><use href="#i-mic"/></svg>课文跟读</button>
     </div>
 
     <div id="m-learn">
       <div class="card wordcard">
+        <span class="tape" aria-hidden="true"></span>
         <div class="w en" id="w-word">grade</div>
         <div class="ipa en" id="w-ipa">/ɡreɪd/</div>
-        <button class="speak" id="w-speak">🔊 听发音</button>
+        <button class="speak" id="w-speak"><svg class="ic" viewBox="0 0 24 24"><use href="#i-mic"/></svg>听发音</button>
         <div class="meaning hide" id="w-meaning">
           <div class="m" id="w-m">n. 年级</div>
           <div class="ex" id="w-ex">I am in Grade Seven.</div>
         </div>
-        <div class="wc-btns" id="w-btns">
-          <button class="btn btn-o" id="w-show">先想一想,看释义</button>
-        </div>
-        <div class="wc-btns" id="w-judge" style="display: none;">
+        <div class="wc-btns" id="w-btns"><button class="btn btn-o" id="w-show">先想一想,看释义</button></div>
+        <div class="wc-btns" id="w-judge" style="display:none;">
           <button class="btn btn-o" id="w-no">🤔 还不熟</button>
           <button class="btn btn-g" id="w-yes">😄 认识啦</button>
         </div>
@@ -436,11 +625,12 @@
       <p class="hint">「还不熟」的词会重新排队,直到全部认识;正式版由 FSRS 算法安排后续复习。</p>
     </div>
 
-    <div id="m-spell" style="display: none;">
+    <div id="m-spell" style="display:none;">
       <div class="card wordcard">
-        <div class="hint" style="margin-bottom: 6px;">听发音 + 看中文,拼出单词</div>
-        <div class="m" id="sp-m" style="font-size: 19px; font-weight: 800;">n. 同班同学</div>
-        <button class="speak" id="sp-speak" style="margin-top: 10px;">🔊 再听一遍</button>
+        <span class="tape" aria-hidden="true"></span>
+        <div class="hint" style="margin-bottom:6px;">听发音 + 看中文,拼出单词</div>
+        <div class="m" id="sp-m" style="font-size:19px; font-weight:800;">n. 同班同学</div>
+        <button class="speak" id="sp-speak" style="margin-top:10px;"><svg class="ic" viewBox="0 0 24 24"><use href="#i-mic"/></svg>再听一遍</button>
         <div class="spellrow">
           <input id="sp-input" placeholder="type here…" autocomplete="off" autocapitalize="off" spellcheck="false">
           <button class="btn btn-g" id="sp-check">检查</button>
@@ -450,10 +640,10 @@
       </div>
     </div>
 
-    <div id="m-read" style="display: none;">
+    <div id="m-read" style="display:none;">
       <div class="card">
-        <h3>🗣️ 课文跟读 <span class="hint" id="rd-prog">0/5</span></h3>
-        <p class="hint" style="margin: 4px 0 8px;">原创同主题短文(教材原文需版权授权后接入)。点 🔊 听,点「跟读」朗读——正式版有录音评分。</p>
+        <h3><svg class="ic" viewBox="0 0 24 24" style="color:var(--yellow)"><use href="#i-mic"/></svg>课文跟读 <span class="hint" id="rd-prog">0/5</span></h3>
+        <p class="hint" style="margin:4px 0 8px;">原创同主题短文(教材原文需版权授权后接入)。点 🔊 听,点「跟读」朗读——正式版有录音评分。</p>
         <div id="rd-list"></div>
       </div>
     </div>
@@ -463,17 +653,35 @@
   <div class="screen" id="scr-scen">
     <div id="scen-list">
       <div class="scen">
-        <div class="si">🍔</div>
+        <div class="si" style="background:var(--coral-soft); color:var(--coral);">🍔</div>
         <div><b>在快餐店 · Ordering Food</b><small>学会礼貌地点餐</small></div>
-        <button class="btn btn-b btn-sm" id="scen-start" style="margin-left: auto;">开始</button>
+        <button class="btn btn-b btn-sm" id="scen-start" style="margin-left:auto;">开始</button>
       </div>
-      <div class="scen"><div class="si">🗺️</div><div><b>问路 · Asking the Way</b><small>完成上一场景解锁</small></div><span class="lock">🔒</span></div>
-      <div class="scen"><div class="si">👋</div><div><b>交新朋友 · Making Friends</b><small>完成上一场景解锁</small></div><span class="lock">🔒</span></div>
-      <div class="scen"><div class="si">🛍️</div><div><b>买东西 · Shopping</b><small>完成上一场景解锁</small></div><span class="lock">🔒</span></div>
-      <p class="hint" style="margin-top: 10px;">正式版:场景与单元同步,并接入 AI 自由对话与语音评测——先选句,再开口。</p>
+      <div class="scen"><div class="si" style="background:var(--blue-soft);">🗺️</div><div><b>问路 · Asking the Way</b><small>完成上一场景解锁</small></div><svg class="ic lock" viewBox="0 0 24 24"><use href="#i-lock"/></svg></div>
+      <div class="scen"><div class="si" style="background:var(--green-soft);">👋</div><div><b>交新朋友 · Making Friends</b><small>完成上一场景解锁</small></div><svg class="ic lock" viewBox="0 0 24 24"><use href="#i-lock"/></svg></div>
+      <div class="scen"><div class="si" style="background:var(--purple-soft);">🛍️</div><div><b>买东西 · Shopping</b><small>完成上一场景解锁</small></div><svg class="ic lock" viewBox="0 0 24 24"><use href="#i-lock"/></svg></div>
+      <p class="hint" style="margin-top:10px;">正式版:场景与单元同步,并接入 AI 自由对话与语音评测——先选句,再开口。</p>
     </div>
-    <div id="scen-play" style="display: none;">
+    <div id="scen-play" style="display:none;">
       <div class="card">
+        <div class="shopband">
+          <svg viewBox="0 0 480 96" preserveAspectRatio="xMidYMid slice" style="width:100%;height:100%;">
+            <rect width="480" height="96" fill="var(--sunken)"/>
+            <rect x="0" y="58" width="480" height="38" fill="var(--sand)" opacity="0.6"/>
+            <rect x="150" y="34" width="180" height="34" rx="6" fill="var(--surface)" stroke="var(--line)" stroke-width="2"/>
+            <text x="240" y="57" text-anchor="middle" font-family="Baloo 2, sans-serif" font-weight="800" font-size="17" fill="var(--coral)">HAPPY BURGER</text>
+            <g>
+              <rect x="120" y="6" width="240" height="24" rx="5" fill="var(--coral)"/>
+              <path d="M120 30 h240 v6 a0 0 0 0 1 0 0 h-240 z" fill="var(--coral)"/>
+              <path d="M132 30 q12 14 24 0 q12 14 24 0 q12 14 24 0 q12 14 24 0 q12 14 24 0 q12 14 24 0 q12 14 24 0 q12 14 24 0 q12 14 24 0" fill="none" stroke="#FFF3E4" stroke-width="0" />
+              <g fill="#FFF3E4"><path d="M132 30 a12 12 0 0 0 24 0z"/><path d="M180 30 a12 12 0 0 0 24 0z"/><path d="M228 30 a12 12 0 0 0 24 0z"/><path d="M276 30 a12 12 0 0 0 24 0z"/><path d="M324 30 a12 12 0 0 0 24 0z"/></g>
+            </g>
+            <circle cx="62" cy="74" r="13" fill="var(--yellow)" opacity="0.9"/>
+            <rect x="52" y="70" width="20" height="4" rx="2" fill="#C97F2B"/>
+            <circle cx="420" cy="72" r="10" fill="var(--coral)" opacity="0.8"/>
+            <rect x="414" y="80" width="12" height="10" rx="2" fill="var(--blue)" opacity="0.7"/>
+          </svg>
+        </div>
         <h3>🍔 在快餐店 <span class="hint">和店员 Momo 对话</span></h3>
         <div class="chat" id="chat"></div>
         <div class="choices" id="choices"></div>
@@ -484,51 +692,55 @@
 
   <!-- ══ 宠物屋 ══ -->
   <div class="screen" id="scr-pet">
-    <div class="petstage" id="petstage" style="position: relative;">
-      <div class="pet" id="petbody">
-        <svg viewBox="0 0 120 110" aria-label="宠物团团">
-          <ellipse cx="60" cy="66" rx="42" ry="38" fill="#7ED6AE"/>
-          <ellipse cx="60" cy="78" rx="26" ry="20" fill="#A8E6C9"/>
-          <path d="M30 38 Q26 12 44 24 Z" fill="#7ED6AE"/>
-          <path d="M90 38 Q94 12 76 24 Z" fill="#7ED6AE"/>
-          <g class="blink">
-            <circle cx="46" cy="58" r="5.5" fill="#2E3A33"/>
-            <circle cx="74" cy="58" r="5.5" fill="#2E3A33"/>
-            <circle cx="48" cy="56" r="1.8" fill="#fff"/>
-            <circle cx="76" cy="56" r="1.8" fill="#fff"/>
-          </g>
-          <ellipse cx="38" cy="68" rx="5" ry="3" fill="#FFB1A0" opacity="0.75"/>
-          <ellipse cx="82" cy="68" rx="5" ry="3" fill="#FFB1A0" opacity="0.75"/>
-          <path d="M54 70 Q60 76 66 70" stroke="#2E3A33" stroke-width="2.5" fill="none" stroke-linecap="round"/>
-        </svg>
-      </div>
+    <div class="petroom" id="petstage">
+      <div class="bigpet" id="petbody"><span class="pet-holder"></span></div>
       <div class="petname">团团 <span class="lv en" id="pet-lv">Lv.3</span></div>
-      <div class="expbar"><i id="pet-exp" style="width: 40%;"></i></div>
-      <div class="hint"><span id="pet-expt">40/100</span> 经验 · 喂食升级,解锁新装扮</div>
+      <div class="expbar"><i id="pet-exp" style="width:40%;"></i></div>
+      <div class="hint" style="position:relative;z-index:2;"><span id="pet-expt">40/100</span> 经验 · 喂食升级,解锁新装扮</div>
       <div class="petacts">
-        <button class="btn btn-g btn-sm" id="feed-c">🍚 喂普通粮</button>
-        <button class="btn btn-b btn-sm" id="feed-f">🍣 喂风味粮</button>
-        <button class="btn btn-p btn-sm" id="feed-d">🍱 喂豪华粮</button>
+        <button class="btn btn-g btn-sm" id="feed-c">🍚 普通粮</button>
+        <button class="btn btn-b btn-sm" id="feed-f">🍣 风味粮</button>
+        <button class="btn btn-p btn-sm" id="feed-d">🍱 豪华粮</button>
       </div>
       <div class="inv" id="inv"></div>
     </div>
 
-    <div class="card boxmachine">
-      <h3 style="justify-content: center;">🎁 宠物粮盲盒</h3>
-      <div class="boxvis" id="boxvis">📦</div><br>
-      <button class="btn btn-c" id="draw">抽一次 · 🪙 50</button>
+    <div class="card gachacard">
+      <h3 style="justify-content:center;">🎁 宠物粮盲盒</h3>
+      <div class="gacha" id="gacha">
+        <svg viewBox="0 0 170 190">
+          <rect x="25" y="10" width="120" height="118" rx="18" fill="var(--coral)"/>
+          <circle cx="85" cy="62" r="44" fill="#FFFFFF" opacity="0.92"/>
+          <g class="dome-caps">
+            <circle cx="68" cy="72" r="13" fill="var(--yellow)"/><path d="M55 72 a13 13 0 0 1 26 0 z" fill="#FFF" opacity="0.5"/>
+            <circle cx="96" cy="78" r="12" fill="var(--blue)"/><path d="M84 78 a12 12 0 0 1 24 0 z" fill="#FFF" opacity="0.5"/>
+            <circle cx="84" cy="54" r="11" fill="var(--purple)"/><path d="M73 54 a11 11 0 0 1 22 0 z" fill="#FFF" opacity="0.5"/>
+            <circle cx="108" cy="58" r="9" fill="var(--green)"/><path d="M99 58 a9 9 0 0 1 18 0 z" fill="#FFF" opacity="0.5"/>
+            <circle cx="62" cy="50" r="8" fill="var(--coral)"/><path d="M54 50 a8 8 0 0 1 16 0 z" fill="#FFF" opacity="0.5"/>
+          </g>
+          <circle cx="85" cy="62" r="44" fill="none" stroke="color-mix(in srgb, var(--coral) 60%, black)" stroke-width="3"/>
+          <g class="knob">
+            <circle cx="85" cy="150" r="15" fill="#FFF3E4" stroke="color-mix(in srgb, var(--coral) 60%, black)" stroke-width="3"/>
+            <rect x="81" y="138" width="8" height="24" rx="3" fill="color-mix(in srgb, var(--coral) 60%, black)"/>
+          </g>
+          <rect x="112" y="140" width="24" height="20" rx="5" fill="color-mix(in srgb, var(--coral) 72%, black)"/>
+          <rect x="30" y="168" width="30" height="12" rx="4" fill="color-mix(in srgb, var(--coral) 60%, black)"/>
+          <rect x="110" y="168" width="30" height="12" rx="4" fill="color-mix(in srgb, var(--coral) 60%, black)"/>
+        </svg>
+      </div>
+      <button class="btn btn-c" id="draw"><span class="coin" style="border-color:#B87710;"></span>50 · 扭一次</button>
       <div class="rates">概率公示:普通粮 60% · 风味粮 25% · 豪华粮 10% · 稀有玩具 5%</div>
-      <div class="pity" id="pity">10 抽内必出豪华及以上(已抽 0 次)</div>
+      <div class="pity" id="pity">10 抽内必出豪华及以上(已累计 0 次)</div>
     </div>
 
     <div class="card">
-      <h3>🐾 宠物好友 <span class="hint">同班同学的宠物来串门啦</span></h3>
+      <h3><svg class="ic" viewBox="0 0 24 24" style="color:var(--green)"><use href="#i-paw"/></svg>宠物好友 <span class="hint">同班同学的宠物来串门啦</span></h3>
       <div class="friends">
-        <div class="friend"><div class="fp">🐰</div><b>布丁</b><small>小美的宠物</small><button class="btn btn-o btn-sm gift">🐟 送小鱼干</button></div>
-        <div class="friend"><div class="fp">🐱</div><b>闪电</b><small>阿哲的宠物</small><button class="btn btn-o btn-sm gift">🐟 送小鱼干</button></div>
-        <div class="friend"><div class="fp">🐸</div><b>泡泡</b><small>天天的宠物</small><button class="btn btn-o btn-sm gift">🐟 送小鱼干</button></div>
+        <div class="friend"><span class="fp" style="background:var(--yellow-soft);">🐰</span><b>布丁</b><small>小美的宠物</small><button class="btn btn-o btn-sm gift">🐟 送小鱼干</button></div>
+        <div class="friend"><span class="fp" style="background:var(--blue-soft);">🐱</span><b>闪电</b><small>阿哲的宠物</small><button class="btn btn-o btn-sm gift">🐟 送小鱼干</button></div>
+        <div class="friend"><span class="fp" style="background:var(--green-soft);">🐸</span><b>泡泡</b><small>天天的宠物</small><button class="btn btn-o btn-sm gift">🐟 送小鱼干</button></div>
       </div>
-      <p class="hint" style="margin-top: 10px;">※ 好友互动仅限同班同学、仅轻互动(送礼/点赞),默认关闭,需家长或老师开启。</p>
+      <p class="hint" style="margin-top:10px;">※ 好友互动仅限同班同学、仅轻互动(送礼/点赞),默认关闭,需家长或老师开启。</p>
     </div>
   </div>
 
@@ -536,17 +748,16 @@
   <div class="screen" id="scr-anime">
     <div class="gate" id="gate"></div>
     <div class="epis" id="epis"></div>
-    <p class="hint" style="margin-top: 12px;">※ 动画内容为占位卡片。正式版接入取得授权的全英文动画(小猪佩奇等需版权方/持牌平台合作),支持英文字幕开关,看完附 1 道趣味理解题。</p>
+    <p class="hint" style="margin-top:12px;">※ 动画内容为占位卡片。正式版接入取得授权的全英文动画(小猪佩奇等需版权方/持牌平台合作),支持英文字幕开关,看完附 1 道趣味理解题。</p>
   </div>
 </div>
 
-<!-- 底部导航 -->
 <nav class="tabbar"><div class="in">
-  <button class="tab on" data-nav="home"><span class="ic">🗓️</span>今日</button>
-  <button class="tab" data-nav="words"><span class="ic">📖</span>单词</button>
-  <button class="tab" data-nav="scen"><span class="ic">💬</span>情景</button>
-  <button class="tab" data-nav="pet"><span class="ic">🐾</span>宠物</button>
-  <button class="tab" data-nav="anime"><span class="ic">📺</span>动画</button>
+  <button class="tab on" data-nav="home"><svg viewBox="0 0 24 24"><use href="#i-map"/></svg>今日</button>
+  <button class="tab" data-nav="words"><svg viewBox="0 0 24 24"><use href="#i-book"/></svg>单词</button>
+  <button class="tab" data-nav="scen"><svg viewBox="0 0 24 24"><use href="#i-chat"/></svg>情景</button>
+  <button class="tab" data-nav="pet"><svg viewBox="0 0 24 24"><use href="#i-paw"/></svg>宠物</button>
+  <button class="tab" data-nav="anime"><svg viewBox="0 0 24 24"><use href="#i-tv"/></svg>动画</button>
 </div></nav>
 
 <!-- 家长中心 -->
@@ -559,7 +770,7 @@
     </div>
     <div class="setrow">
       <div class="st"><b>每日观看上限</b><small>开放日内的时长限制</small></div>
-      <select id="sel-limit" style="border: 1.5px solid var(--line); background: var(--sunken); color: var(--ink); border-radius: 10px; padding: 7px 10px; font-size: 13.5px;">
+      <select id="sel-limit" style="border:1.5px solid var(--line); background:var(--sunken); color:var(--ink); border-radius:10px; padding:7px 10px; font-size:13.5px;">
         <option>20 分钟</option><option selected>30 分钟</option><option>40 分钟</option>
       </select>
     </div>
@@ -567,13 +778,13 @@
       <div class="st"><b>演示:模拟「学期内周三」</b><small>体验非开放日的锁定状态(仅原型演示用)</small></div>
       <button class="switch" id="sw-sim" role="switch" aria-checked="false" aria-label="模拟学期内周三"></button>
     </div>
-    <div class="setrow" style="border-bottom: none;">
+    <div class="setrow" style="border-bottom:none;">
       <div class="st"><b>学习周报</b><small>每周日推送:学了什么、薄弱点在哪(正式版)</small></div>
       <span class="hint">示例</span>
     </div>
-    <div style="display: flex; gap: 10px; margin-top: 16px;">
+    <div style="display:flex; gap:10px; margin-top:16px;">
       <button class="btn btn-o btn-sm" id="reset">清空演示数据</button>
-      <button class="btn btn-g btn-sm" id="close-parent" style="margin-left: auto;">完成</button>
+      <button class="btn btn-g btn-sm" id="close-parent" style="margin-left:auto;">完成</button>
     </div>
   </div>
 </div>
@@ -583,10 +794,10 @@
   <div class="sheet">
     <div class="reveal-item">
       <div class="big" id="rv-emoji">🍚</div>
-      <h3 id="rv-name" style="justify-content: center; text-align: center;">普通粮 ×1</h3>
+      <h3 id="rv-name" style="justify-content:center; text-align:center;">普通粮 ×1</h3>
       <span class="rar" id="rv-rar">普通</span>
-      <p class="hint" id="rv-note" style="margin-top: 8px;">已放入背包,快去喂团团吧!</p>
-      <div style="margin-top: 14px;"><button class="btn btn-p" id="close-box">收下啦</button></div>
+      <p class="hint" id="rv-note" style="margin-top:8px;">已放入背包,快去喂团团吧!</p>
+      <div style="margin-top:14px;"><button class="btn btn-p" id="close-box">收下啦</button></div>
     </div>
   </div>
 </div>
@@ -594,8 +805,8 @@
 <!-- 单元小测 -->
 <div class="veil" id="veil-quiz">
   <div class="sheet">
-    <h3>📝 单元小测 <span class="hint" id="qz-prog">1/3</span></h3>
-    <p id="qz-q" style="font-size: 15px; font-weight: 700; margin-bottom: 12px;"></p>
+    <h3><svg class="ic" viewBox="0 0 24 24" style="color:var(--purple)"><use href="#i-pen"/></svg>单元小测 <span class="hint" id="qz-prog">1/3</span></h3>
+    <p id="qz-q" style="font-size:15px; font-weight:800; margin-bottom:12px;"></p>
     <div class="choices" id="qz-choices"></div>
     <div class="tip" id="qz-tip"></div>
   </div>
@@ -700,13 +911,36 @@
       a: 2, tips: ["顺序不对哦,递东西要说 Here you are.", "先付钱再说再见哦", ""] }
   ];
   var LOOT = [
-    { k: "c", name: "普通粮", emoji: "🍚", rar: "普通", col: "#9AA79E", w: 60 },
-    { k: "f", name: "风味粮", emoji: "🍣", rar: "风味", col: "#4C9EEB", w: 25 },
+    { k: "c", name: "普通粮", emoji: "🍚", rar: "普通", col: "#8FA096", w: 60 },
+    { k: "f", name: "风味粮", emoji: "🍣", rar: "风味", col: "#3E97DE", w: 25 },
     { k: "d", name: "豪华粮", emoji: "🍱", rar: "豪华", col: "#9B6DFF", w: 10 },
-    { k: "t", name: "稀有玩具·小飞盘", emoji: "🥏", rar: "稀有", col: "#FFB937", w: 5 }
+    { k: "t", name: "稀有玩具·小飞盘", emoji: "🥏", rar: "稀有", col: "#E8A317", w: 5 }
   ];
-  // 假期区间(每年按江苏校历配置;演示用):暑假 7.1–8.31,寒假 1.20–2.16
   var HOLIDAYS = [{ from: [7, 1], to: [8, 31], name: "暑假" }, { from: [1, 20], to: [2, 16], name: "寒假" }];
+  var SAYINGS = ["今天也一起加油呀!", "先去学单词吧,Go!", "听说宝箱里有好吃的…", "You can do it!", "喂我一口小鱼干嘛~"];
+
+  /* 宠物 SVG(岛屿小精灵「团团」) */
+  var PET_SVG =
+    '<svg class="pet-svg" viewBox="0 0 140 130" aria-label="宠物团团">' +
+    '<defs><radialGradient id="petg" cx="38%" cy="30%" r="80%"><stop offset="0%" stop-color="#A5EBC7"/><stop offset="70%" stop-color="#6FCE9E"/><stop offset="100%" stop-color="#57BA88"/></radialGradient></defs>' +
+    '<ellipse cx="70" cy="121" rx="36" ry="7" fill="#000" opacity="0.10"/>' +
+    '<path d="M108 92 C122 90 128 78 122 70 C130 74 134 88 124 96 C118 101 110 99 108 92 Z" fill="#57BA88"/>' +
+    '<g class="sprout"><path d="M70 24 C70 14 62 10 54 12 C60 18 64 20 68 24 Z" fill="#3E9E6C"/><path d="M70 24 C72 12 82 8 90 12 C82 16 76 20 72 24 Z" fill="#5BC08D"/><rect x="68.4" y="18" width="3.2" height="9" rx="1.6" fill="#3E9E6C"/></g>' +
+    '<ellipse cx="70" cy="80" rx="45" ry="41" fill="url(#petg)"/>' +
+    '<path d="M34 52 C28 40 32 30 42 26 C46 34 46 42 44 48 Z" fill="#6FCE9E"/><path d="M37.5 47 C34 40 36 33 42 30 C44 35 44 41 43 45 Z" fill="#FFC3CF"/>' +
+    '<path d="M106 52 C112 40 108 30 98 26 C94 34 94 42 96 48 Z" fill="#6FCE9E"/><path d="M102.5 47 C106 40 104 33 98 30 C96 35 96 41 97 45 Z" fill="#FFC3CF"/>' +
+    '<ellipse cx="70" cy="94" rx="27" ry="21" fill="#CFF4DF"/>' +
+    '<ellipse cx="30" cy="86" rx="8" ry="11" fill="#6FCE9E" transform="rotate(18 30 86)"/>' +
+    '<ellipse cx="110" cy="86" rx="8" ry="11" fill="#6FCE9E" transform="rotate(-18 110 86)"/>' +
+    '<g class="blink">' +
+    '<circle cx="53" cy="68" r="6.4" fill="#2E3A33"/><circle cx="87" cy="68" r="6.4" fill="#2E3A33"/>' +
+    '<circle cx="55.4" cy="65.6" r="2.2" fill="#fff"/><circle cx="89.4" cy="65.6" r="2.2" fill="#fff"/>' +
+    '<circle cx="51" cy="70.5" r="1.1" fill="#fff" opacity="0.85"/><circle cx="85" cy="70.5" r="1.1" fill="#fff" opacity="0.85"/>' +
+    '</g>' +
+    '<ellipse cx="41" cy="80" rx="5.6" ry="3.4" fill="#FFB1A0" opacity="0.8"/><ellipse cx="99" cy="80" rx="5.6" ry="3.4" fill="#FFB1A0" opacity="0.8"/>' +
+    '<path class="mouth-smile" d="M62 84 Q70 92 78 84" stroke="#2E3A33" stroke-width="2.6" fill="none" stroke-linecap="round"/>' +
+    '<g class="mouth-open"><ellipse cx="70" cy="88" rx="7" ry="5.4" fill="#7A4034"/><ellipse cx="70" cy="90.4" rx="4" ry="2.4" fill="#FF8E7A"/></g>' +
+    '</svg>';
 
   /* ── 状态 ─────────────────────────────────────── */
   var DEF = { pts: 120, streak: 5, grade: 7, tasks: {}, inv: { c: 2, f: 0, d: 0, t: 0 },
@@ -721,6 +955,8 @@
   load();
 
   var $ = function (id) { return document.getElementById(id); };
+  document.querySelectorAll(".pet-holder").forEach(function (h) { h.outerHTML = PET_SVG; });
+
   function toast(msg) {
     var t = $("toast"); t.textContent = msg; t.classList.add("on");
     clearTimeout(toast._t); toast._t = setTimeout(function () { t.classList.remove("on"); }, 1800);
@@ -731,6 +967,20 @@
       u.lang = "en-US"; u.rate = 0.9;
       speechSynthesis.cancel(); speechSynthesis.speak(u);
     } catch (e) { toast("当前浏览器不支持语音合成"); }
+  }
+  function confetti() {
+    var colors = ["#2FA878", "#FFB937", "#FF6B4A", "#3E97DE", "#9B6DFF"];
+    for (var i = 0; i < 26; i++) {
+      var b = document.createElement("i");
+      b.className = "confetti-bit";
+      b.style.left = (18 + Math.random() * 64) + "vw";
+      b.style.top = (8 + Math.random() * 18) + "vh";
+      b.style.background = colors[i % colors.length];
+      b.style.animationDelay = (Math.random() * 0.25) + "s";
+      b.style.transform = "rotate(" + Math.floor(Math.random() * 180) + "deg)";
+      document.body.appendChild(b);
+      (function (el) { setTimeout(function () { el.remove(); }, 1600); })(b);
+    }
   }
   function addPts(n, why) { S.pts += n; save(); renderHud(); toast("🪙 +" + n + " " + (why || "")); }
   function doneTask(k, pts, why) {
@@ -763,18 +1013,35 @@
     });
   });
 
-  /* ── 任务 ─────────────────────────────────────── */
+  /* ── 岛上任务节点 ─────────────────────────────── */
   function renderTasks() {
-    [["w", "task-w"], ["r", "task-r"], ["s", "task-s"], ["q", "task-q"]].forEach(function (p) {
-      $(p[1]).classList.toggle("done", !!S.tasks[S.grade + "-" + p[0]]);
+    var map = { w: "n-w", r: "n-r", s: "n-s", q: "n-q" };
+    var doneCount = 0, firstOpen = null;
+    Object.keys(map).forEach(function (k) {
+      var done = !!S.tasks[S.grade + "-" + k];
+      if (done) doneCount++; else if (!firstOpen) firstOpen = map[k];
+      $(map[k]).classList.toggle("is-done", done);
+      $(map[k]).classList.remove("is-cur");
     });
+    if (firstOpen) $(firstOpen).classList.add("is-cur");
+    var chest = $("n-b"), opened = !!S.tasks[S.grade + "-b"];
+    chest.disabled = doneCount < 4 || opened;
+    chest.classList.toggle("ready", doneCount >= 4 && !opened);
+    $("chest-lbl").textContent = opened ? "明天再来!" : (doneCount >= 4 ? "开宝箱 +30" : "今日宝箱 " + doneCount + "/4");
   }
+  $("n-q").addEventListener("click", function () { qi = 0; qWrong = 0; showQuiz(); $("veil-quiz").classList.add("on"); });
+  $("n-b").addEventListener("click", function () {
+    if (this.disabled) return;
+    doneTask("b", 30, "今日宝箱开启!"); confetti(); renderTasks();
+  });
+  $("isle-pet").addEventListener("click", function () {
+    $("pet-say").textContent = SAYINGS[Math.floor(Math.random() * SAYINGS.length)];
+    heart(this, "❤️");
+  });
 
   /* ── 认单词 ───────────────────────────────────── */
-  var queue = [], wi = 0, learned = 0;
-  function resetLearn() {
-    queue = WORDS[S.grade].slice(); wi = 0; learned = 0; showWord();
-  }
+  var queue = [], learned = 0;
+  function resetLearn() { queue = WORDS[S.grade].slice(); learned = 0; showWord(); }
   function showWord() {
     var total = WORDS[S.grade].length;
     if (learned >= total) {
@@ -782,9 +1049,10 @@
       $("w-m").textContent = "8 个单词都认识啦"; $("w-ex").textContent = "明天 SRS 会安排复习哦";
       $("w-meaning").classList.remove("hide");
       $("w-btns").style.display = "none"; $("w-judge").style.display = "none";
-      doneTask("w", 20, "学完 8 个新单词"); renderDots(); return;
+      if (!S.tasks[S.grade + "-w"]) { doneTask("w", 20, "学完 8 个新单词"); confetti(); }
+      renderDots(); return;
     }
-    var it = queue[wi % queue.length];
+    var it = queue[0];
     $("w-word").textContent = it.w; $("w-ipa").textContent = it.p;
     $("w-m").textContent = it.m; $("w-ex").textContent = it.ex;
     $("w-meaning").classList.add("hide");
@@ -801,26 +1069,21 @@
     $("w-btns").style.display = "none"; $("w-judge").style.display = "flex";
   });
   $("w-speak").addEventListener("click", function () { say($("w-word").textContent); });
-  $("w-yes").addEventListener("click", function () {
-    queue.splice(wi % queue.length, 1); learned++; showWord();
-  });
+  $("w-yes").addEventListener("click", function () { queue.shift(); learned++; showWord(); });
   $("w-no").addEventListener("click", function () {
-    var it = queue.splice(wi % queue.length, 1)[0]; queue.push(it);
-    toast("没关系,待会再见到它"); showWord();
+    queue.push(queue.shift()); toast("没关系,待会再见到它"); showWord();
   });
 
   /* ── 拼写挑战 ─────────────────────────────────── */
-  var spellSet = [], si = 0;
-  function resetSpell() {
-    spellSet = WORDS[S.grade].slice(0, 3); si = 0; showSpell();
-  }
-  function showSpell() {
+  var spellSet = [], si = 0, spellInit = false;
+  function resetSpell() { spellSet = WORDS[S.grade].slice(0, 3); si = 0; showSpell(false); }
+  function showSpell(speak) {
     if (si >= spellSet.length) {
       $("sp-m").textContent = "🎉 拼写挑战完成!"; $("sp-fb").textContent = ""; $("sp-input").value = "";
       addPts(5, "拼写加成"); renderSpellDots(); return;
     }
     $("sp-m").textContent = spellSet[si].m; $("sp-input").value = ""; $("sp-fb").textContent = ""; $("sp-fb").className = "feedback";
-    renderSpellDots(); say(spellSet[si].w);
+    renderSpellDots(); if (speak) say(spellSet[si].w);
   }
   function renderSpellDots() {
     var html = "";
@@ -835,7 +1098,7 @@
     var v = $("sp-input").value.trim().toLowerCase();
     if (v === spellSet[si].w) {
       $("sp-fb").textContent = "✓ " + spellSet[si].w + " 拼对啦!"; $("sp-fb").className = "feedback good";
-      si++; setTimeout(showSpell, 700);
+      si++; setTimeout(function () { showSpell(true); }, 700);
     } else {
       $("sp-fb").textContent = "再试一次,听听发音提示~"; $("sp-fb").className = "feedback bad";
     }
@@ -843,10 +1106,7 @@
 
   /* ── 课文跟读 ─────────────────────────────────── */
   var readDone = [];
-  function renderRead() {
-    readDone = PASSAGES[S.grade].map(function () { return false; });
-    drawRead();
-  }
+  function renderRead() { readDone = PASSAGES[S.grade].map(function () { return false; }); drawRead(); }
   function drawRead() {
     var html = "";
     PASSAGES[S.grade].forEach(function (s, i) {
@@ -857,7 +1117,7 @@
     $("rd-list").innerHTML = html;
     var n = readDone.filter(Boolean).length;
     $("rd-prog").textContent = n + "/" + PASSAGES[S.grade].length;
-    if (n === PASSAGES[S.grade].length && !S.tasks[S.grade + "-r"]) doneTask("r", 15, "课文跟读完成");
+    if (n === PASSAGES[S.grade].length && !S.tasks[S.grade + "-r"]) { doneTask("r", 15, "课文跟读完成"); confetti(); }
   }
   $("rd-list").addEventListener("click", function (e) {
     var b = e.target.closest("button"); if (!b) return;
@@ -866,7 +1126,6 @@
     else { readDone[i] = true; say(PASSAGES[S.grade][i]); drawRead(); }
   });
 
-  /* ── 单词模式切换 ─────────────────────────────── */
   function setMode(m) {
     document.querySelectorAll(".mode").forEach(function (b) { b.classList.toggle("on", b.dataset.m === m); });
     $("m-learn").style.display = m === "learn" ? "" : "none";
@@ -878,35 +1137,38 @@
   });
 
   /* ── 情景对话 ─────────────────────────────────── */
+  var MOMO = '<svg viewBox="0 0 34 34"><circle cx="17" cy="18" r="12" fill="#FFC9A3"/><path d="M8 12 L11 4 L15 10 Z" fill="#E8935B"/><path d="M26 12 L23 4 L19 10 Z" fill="#E8935B"/><rect x="7" y="8" width="20" height="6" rx="3" fill="#FF6B4A"/><circle cx="13" cy="18" r="1.7" fill="#4A3226"/><circle cx="21" cy="18" r="1.7" fill="#4A3226"/><path d="M14.5 23 Q17 25.4 19.5 23" stroke="#4A3226" stroke-width="1.4" fill="none" stroke-linecap="round"/><circle cx="10.5" cy="21" r="1.6" fill="#FFA68C" opacity="0.8"/><circle cx="23.5" cy="21" r="1.6" fill="#FFA68C" opacity="0.8"/></svg>';
+  var ME = '<svg viewBox="0 0 34 34"><circle cx="17" cy="18" r="12" fill="#FFDBB8"/><path d="M6 16 C6 8 12 5 17 5 C22 5 28 8 28 16 C24 14 21 12 17 12 C13 12 10 14 6 16 Z" fill="#4A3226"/><circle cx="13" cy="19" r="1.7" fill="#4A3226"/><circle cx="21" cy="19" r="1.7" fill="#4A3226"/><path d="M14.5 24 Q17 26 19.5 24" stroke="#4A3226" stroke-width="1.4" fill="none" stroke-linecap="round"/></svg>';
   var ci = 0, mistakes = 0;
   $("scen-start").addEventListener("click", function () {
     ci = 0; mistakes = 0;
     $("scen-list").style.display = "none"; $("scen-play").style.display = "";
     $("chat").innerHTML = ""; nextTurn();
   });
-  function bubble(role, text, me) {
-    var d = document.createElement("div");
-    d.className = "bub " + (me ? "me" : "npc");
-    d.innerHTML = "<span class='role'>" + role + "</span>" + text +
-      (me ? "" : " <button class='sp2' aria-label='朗读'>🔊</button>");
-    if (!me) d.querySelector(".sp2").addEventListener("click", function () { say(text); });
-    $("chat").appendChild(d);
+  function bubble(text, me) {
+    var row = document.createElement("div");
+    row.className = "msg" + (me ? " me" : "");
+    row.innerHTML = "<span class='ava'>" + (me ? ME : MOMO) + "</span>" +
+      "<div class='bub " + (me ? "mebub" : "npc") + "'>" + text +
+      (me ? "" : " <button class='sp2' aria-label='朗读'>🔊</button>") + "</div>";
+    if (!me) row.querySelector(".sp2").addEventListener("click", function () { say(text); });
+    $("chat").appendChild(row);
   }
   function nextTurn() {
     $("scen-tip").textContent = "";
     if (ci >= SCEN.length) {
-      bubble("店员 Momo", "Enjoy your meal! 🍔", false); say("Enjoy your meal!");
+      bubble("Enjoy your meal! 🍔", false); say("Enjoy your meal!");
       $("choices").innerHTML = "<div style='text-align:center;padding:6px 0;'>" +
         "<b>🎉 场景完成!</b> <span class='hint'>口误 " + mistakes + " 次</span><br>" +
         "<button class='btn btn-b btn-sm' id='scen-back' style='margin-top:10px;'>返回场景列表</button></div>";
       $("scen-back").addEventListener("click", function () {
         $("scen-list").style.display = ""; $("scen-play").style.display = "none";
       });
-      doneTask("s", 25, "情景对话完成");
+      if (!S.tasks[S.grade + "-s"]) { doneTask("s", 25, "情景对话完成"); confetti(); }
       return;
     }
     var t = SCEN[ci];
-    bubble("店员 Momo", t.npc, false); say(t.npc);
+    bubble(t.npc, false); say(t.npc);
     var html = "";
     t.c.forEach(function (c, i) { html += "<button class='choice' data-i='" + i + "'>" + c + "</button>"; });
     $("choices").innerHTML = html;
@@ -914,7 +1176,7 @@
       b.addEventListener("click", function () {
         var i = +b.dataset.i, t2 = SCEN[ci];
         if (i === t2.a) {
-          bubble("我", t2.c[i], true); say(t2.c[i]);
+          bubble(t2.c[i], true); say(t2.c[i]);
           ci++; setTimeout(nextTurn, 750);
         } else {
           mistakes++; b.classList.add("bad");
@@ -928,22 +1190,24 @@
   var FOOD = { c: { exp: 10, emoji: "🍚" }, f: { exp: 18, emoji: "🍣" }, d: { exp: 35, emoji: "🍱" } };
   function renderPet() {
     $("pet-lv").textContent = "Lv." + S.petLv;
-    var need = 100;
-    $("pet-exp").style.width = Math.min(100, S.petExp / need * 100) + "%";
-    $("pet-expt").textContent = S.petExp + "/" + need;
+    $("pet-exp").style.width = Math.min(100, S.petExp) + "%";
+    $("pet-expt").textContent = S.petExp + "/100";
     $("inv").innerHTML =
-      "<span class='invitem'>🍚 普通粮 ×" + S.inv.c + "</span>" +
-      "<span class='invitem'>🍣 风味粮 ×" + S.inv.f + "</span>" +
-      "<span class='invitem'>🍱 豪华粮 ×" + S.inv.d + "</span>" +
-      "<span class='invitem'>🥏 玩具 ×" + S.inv.t + "</span>";
+      "<span class='invitem'>🍚 ×" + S.inv.c + "</span>" +
+      "<span class='invitem'>🍣 ×" + S.inv.f + "</span>" +
+      "<span class='invitem'>🍱 ×" + S.inv.d + "</span>" +
+      "<span class='invitem'>🥏 ×" + S.inv.t + "</span>";
   }
   function feed(k) {
-    if (S.inv[k] <= 0) { toast("背包里没有这种粮啦,去抽盲盒吧"); return; }
+    if (S.inv[k] <= 0) { toast("背包里没有这种粮啦,去扭盲盒吧"); return; }
     S.inv[k]--; S.petExp += FOOD[k].exp;
-    if (S.petExp >= 100) { S.petExp -= 100; S.petLv++; toast("🎉 团团升到 Lv." + S.petLv + " 啦!"); }
+    if (S.petExp >= 100) { S.petExp -= 100; S.petLv++; toast("🎉 团团升到 Lv." + S.petLv + " 啦!"); confetti(); }
     save(); renderPet();
-    var p = $("petbody"); p.classList.remove("jump"); void p.offsetWidth; p.classList.add("jump");
-    heart($("petstage"), FOOD[k].emoji);
+    var p = $("petbody");
+    p.classList.remove("jump"); void p.offsetWidth; p.classList.add("jump");
+    var room = $("petstage");
+    room.classList.add("munch"); setTimeout(function () { room.classList.remove("munch"); }, 750);
+    heart(room, FOOD[k].emoji);
   }
   $("feed-c").addEventListener("click", function () { feed("c"); });
   $("feed-f").addEventListener("click", function () { feed("f"); });
@@ -951,8 +1215,8 @@
   function heart(host, emoji) {
     var h = document.createElement("span");
     h.className = "heartfloat"; h.textContent = emoji || "❤️";
-    h.style.left = (40 + Math.floor(Math.random() * 20)) + "%"; h.style.top = "44%";
-    host.appendChild(h); setTimeout(function () { h.remove(); }, 900);
+    h.style.left = (42 + Math.floor(Math.random() * 16)) + "%"; h.style.top = "38%";
+    host.appendChild(h); setTimeout(function () { h.remove(); }, 950);
   }
   document.querySelectorAll(".gift").forEach(function (b) {
     b.addEventListener("click", function () {
@@ -960,40 +1224,37 @@
     });
   });
 
-  /* ── 盲盒(含 10 抽保底) ──────────────────────── */
+  /* ── 扭蛋机(含 10 抽保底) ───────────────────── */
   function roll() {
-    // 保底:第 10 抽仍未出豪华及以上,则必出豪华
     if (S.pity >= 9) return LOOT[2];
     var r = Math.random() * 100, acc = 0;
     for (var i = 0; i < LOOT.length; i++) { acc += LOOT[i].w; if (r < acc) return LOOT[i]; }
     return LOOT[0];
   }
   $("draw").addEventListener("click", function () {
-    if (S.pts < 50) { toast("积分不够啦,先去完成今日任务吧!"); return; }
+    if (S.pts < 50) { toast("积分不够啦,先去岛上完成任务吧!"); return; }
     S.pts -= 50; renderHud();
-    var v = $("boxvis"); v.classList.remove("shake"); void v.offsetWidth; v.classList.add("shake");
-    $("draw").disabled = true;
+    var g = $("gacha");
+    g.classList.add("rolling"); $("draw").disabled = true;
     setTimeout(function () {
       var item = roll();
       if (item.k === "d" || item.k === "t") S.pity = 0; else S.pity++;
       S.inv[item.k]++; save(); renderPet(); renderPity();
+      g.classList.remove("rolling");
       $("rv-emoji").textContent = item.emoji;
       $("rv-name").textContent = item.name + " ×1";
-      $("rv-rar").textContent = item.rar;
-      $("rv-rar").style.background = item.col; $("rv-rar").style.color = "#fff";
+      $("rv-rar").textContent = item.rar; $("rv-rar").style.background = item.col;
       $("rv-note").textContent = item.k === "t" ? "稀有玩具!团团玩起来经验翻倍(演示)" : "已放入背包,快去喂团团吧!";
       $("veil-box").classList.add("on");
+      if (item.k === "d" || item.k === "t") confetti();
       $("draw").disabled = false;
-    }, 850);
+    }, 900);
   });
   function renderPity() { $("pity").textContent = "10 抽内必出豪华及以上(已累计 " + S.pity + " 次)"; }
   $("close-box").addEventListener("click", function () { $("veil-box").classList.remove("on"); });
 
   /* ── 单元小测 ─────────────────────────────────── */
   var qi = 0, qWrong = 0;
-  $("btn-quiz").addEventListener("click", function () {
-    qi = 0; qWrong = 0; showQuiz(); $("veil-quiz").classList.add("on");
-  });
   function showQuiz() {
     var list = QUIZ[S.grade];
     if (qi >= list.length) {
@@ -1001,7 +1262,8 @@
       $("qz-choices").innerHTML = "<button class='btn btn-p' id='qz-close'>领取奖励</button>";
       $("qz-tip").textContent = "";
       $("qz-close").addEventListener("click", function () {
-        $("veil-quiz").classList.remove("on"); doneTask("q", 20, "单元小测完成");
+        $("veil-quiz").classList.remove("on");
+        if (!S.tasks[S.grade + "-q"]) { doneTask("q", 20, "单元小测完成"); confetti(); }
       });
       return;
     }
@@ -1031,20 +1293,32 @@
       if (cur >= a && cur <= b) return { open: true, why: h.name + "开放中 🎉", sub: "今日剩余可看:" + $("sel-limit").value + "(演示)" };
     }
     if (day === 0 || day === 6) return { open: true, why: "周末开放中 🎉", sub: "今日剩余可看:" + $("sel-limit").value + "(演示)" };
-    var left = 6 - day;
-    return { open: false, why: "动画区仅周末与寒暑假开放", sub: "距离周六解锁还有 " + left + " 天,先去完成今日任务吧!" };
+    return { open: false, why: "动画区仅周末与寒暑假开放", sub: "距离周六解锁还有 " + (6 - day) + " 天,先去岛上完成任务吧!" };
   }
-  var EPIS = ["🐷", "🦖", "🚀", "🌈", "🐧", "🎪"];
+  var EPI_ART = [
+    { g: ["#FF9E86", "#FF6B4A"], d: "M20 62 q14 -26 34 -8 q18 -22 34 2 q10 16 -6 20 h-56 q-14 -4 -6 -14z" },
+    { g: ["#8FE0B4", "#2FA878"], d: "M28 70 l14 -34 l12 16 l10 -22 l16 40 z" },
+    { g: ["#9DC8F7", "#3E97DE"], d: "M30 40 h58 v26 h-58 z M36 66 l-6 12 M82 66 l6 12" },
+    { g: ["#CBB4FF", "#9B6DFF"], d: "M60 26 l8 18 20 2 -15 13 5 20 -18 -11 -18 11 5 -20 -15 -13 20 -2 z" },
+    { g: ["#FFD98A", "#F5A623"], d: "M32 66 a26 26 0 0 1 52 0 z M58 40 v-12" },
+    { g: ["#F7B2CB", "#E86A9A"], d: "M36 64 q-10 -22 12 -26 q4 -14 20 -10 q16 -6 20 10 q14 10 2 26 z" }
+  ];
   function renderGate() {
     var g = gateState();
     $("gate").className = "gate " + (g.open ? "open" : "closed");
-    $("gate").innerHTML = (g.open ? "✅ " : "🔒 ") + "<div>" + g.why + "<small>" + g.sub + "</small></div>";
+    $("gate").innerHTML = "<span class='gi'><svg class='ic' viewBox='0 0 24 24'><use href='#" + (g.open ? "i-play" : "i-lock") + "'/></svg></span>" +
+      "<div>" + g.why + "<small>" + g.sub + "</small></div>";
     var html = "";
-    var grads = ["#FFB1A0,#FF6B4A", "#8ED8B0,#2EAF7D", "#9DC4F5,#4C9EEB", "#C9B2FF,#9B6DFF", "#FFD98A,#FFB937", "#F5A2C0,#E86A9A"];
-    EPIS.forEach(function (e, i) {
-      html += "<div class='epi'><div class='cover' style='background:linear-gradient(135deg," + grads[i] + ")'>" + e + "</div>" +
+    EPI_ART.forEach(function (art, i) {
+      html += "<div class='epi'><div class='cover'>" +
+        "<svg viewBox='0 0 116 92' preserveAspectRatio='xMidYMid slice'>" +
+        "<rect width='116' height='92' fill='" + art.g[0] + "'/>" +
+        "<circle cx='96' cy='16' r='26' fill='" + art.g[1] + "' opacity='0.5'/>" +
+        "<circle cx='12' cy='80' r='20' fill='" + art.g[1] + "' opacity='0.35'/>" +
+        "<path d='" + art.d + "' fill='#FFFFFF' opacity='0.85' stroke='" + art.g[1] + "' stroke-width='2' stroke-linejoin='round' transform='translate(0 4)'/>" +
+        "</svg></div>" +
         "<div class='nm'>全英文动画 · 第 " + (i + 1) + " 集<small>版权内容占位 · " + (4 + i) + " 分钟</small></div>" +
-        (g.open ? "" : "<div class='lockov'>🔒</div>") + "</div>";
+        (g.open ? "" : "<div class='lockov'><svg class='ic' viewBox='0 0 24 24' style='width:26px;height:26px;'><use href='#i-lock'/></svg></div>") + "</div>";
     });
     $("epis").innerHTML = html;
     if (g.open) {
@@ -1080,9 +1354,6 @@
   /* ── 启动 ─────────────────────────────────────── */
   function renderAll() {
     renderHud(); renderGrade(); renderTasks(); resetLearn(); resetSpell(); renderRead(); renderPet(); renderPity(); renderGate();
-    bindStates();
-  }
-  function bindStates() {
     $("sw-anime").classList.toggle("on", !!S.anime);
     $("sw-sim").classList.toggle("on", !!S.sim);
   }
