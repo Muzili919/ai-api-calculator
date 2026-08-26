@@ -1,0 +1,736 @@
+<title>木子教育主站原型</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@600;700;900&family=Noto+Sans+SC:wght@400;500;700&display=swap">
+
+<!--
+  ══════════════════════════════════════════════════════════════
+  木子教育 · 主站首页高保真原型
+  说明:
+  · 自包含单文件,浏览器直接打开即可预览(深/浅色双主题自适应)
+  · 全文搜索「占位」可定位所有待替换内容,上线检查清单见
+    docs/strategy/02-website-blueprint.md 第 5 节
+  · 品牌名「木子教育」「木子学伴平板」均为占位名,注册前需核名查重
+  ══════════════════════════════════════════════════════════════
+-->
+
+<style>
+  /* ── 设计令牌:浅色(默认) ─────────────────────────── */
+  :root {
+    --bg: #FAF9F6;            /* 瓷白 */
+    --surface: #FFFFFF;
+    --surface-tint: #F3F1EA;  /* 分段浅带 */
+    --ink: #1B2A3A;           /* 墨蓝 */
+    --ink-soft: #5C6B7A;
+    --line: #E4E0D5;
+    --gold: #A9873C;          /* 品牌金(浅底可读) */
+    --gold-fill: #D4B872;     /* 品牌金(填充/下划线,沿用现有主站点缀色) */
+    --gold-wash: rgba(212, 184, 114, 0.14);
+    --seal: #C3432B;          /* 印章红 */
+    --seal-fg: #FFF9F2;
+    --btn-bg: #1B2A3A;
+    --btn-fg: #FAF9F6;
+    --shadow: 0 24px 60px -24px rgba(27, 42, 58, 0.28);
+    --ring: rgba(169, 135, 60, 0.55);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #0F1620;
+      --surface: #16202C;
+      --surface-tint: #131C27;
+      --ink: #EDE9DF;
+      --ink-soft: #98A4B1;
+      --line: #273240;
+      --gold: #D4B872;
+      --gold-fill: #D4B872;
+      --gold-wash: rgba(212, 184, 114, 0.10);
+      --seal: #DA5940;
+      --seal-fg: #FFF6EE;
+      --btn-bg: #D4B872;
+      --btn-fg: #14202D;
+      --shadow: 0 24px 60px -28px rgba(0, 0, 0, 0.65);
+      --ring: rgba(212, 184, 114, 0.6);
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #0F1620;
+    --surface: #16202C;
+    --surface-tint: #131C27;
+    --ink: #EDE9DF;
+    --ink-soft: #98A4B1;
+    --line: #273240;
+    --gold: #D4B872;
+    --gold-fill: #D4B872;
+    --gold-wash: rgba(212, 184, 114, 0.10);
+    --seal: #DA5940;
+    --seal-fg: #FFF6EE;
+    --btn-bg: #D4B872;
+    --btn-fg: #14202D;
+    --shadow: 0 24px 60px -28px rgba(0, 0, 0, 0.65);
+    --ring: rgba(212, 184, 114, 0.6);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: "Noto Sans SC", "PingFang SC", "Microsoft YaHei", sans-serif;
+    font-size: 16px;
+    line-height: 1.75;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+  ::selection { background: var(--gold-fill); color: #1B2A3A; }
+  a { color: inherit; text-decoration: none; }
+  img, svg { max-width: 100%; display: block; }
+  :is(a, button):focus-visible { outline: 2px solid var(--ring); outline-offset: 3px; border-radius: 4px; }
+
+  h1, h2, h3, .serif {
+    font-family: "Noto Serif SC", "Songti SC", "SimSun", serif;
+    text-wrap: balance;
+    line-height: 1.3;
+  }
+
+  .wrap { max-width: 1120px; margin: 0 auto; padding: 0 24px; }
+
+  /* ── 原型提示条(上线前删除整个 #proto-note) ───────── */
+  #proto-note {
+    background: var(--gold-wash);
+    border-bottom: 1px solid var(--line);
+    font-size: 12.5px;
+    color: var(--ink-soft);
+    text-align: center;
+    padding: 7px 16px;
+    letter-spacing: 0.04em;
+  }
+  #proto-note b { color: var(--gold); font-weight: 700; }
+
+  /* ── 导航 ─────────────────────────────────────────── */
+  header.nav {
+    position: sticky; top: 0; z-index: 50;
+    background: color-mix(in srgb, var(--bg) 86%, transparent);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--line);
+  }
+  .nav-inner { display: flex; align-items: center; gap: 32px; height: 64px; }
+  .brand { display: flex; align-items: center; gap: 11px; }
+  .seal {
+    width: 34px; height: 34px; flex: none;
+    background: var(--seal); color: var(--seal-fg);
+    font-family: "Noto Serif SC", serif; font-weight: 700; font-size: 13px;
+    line-height: 1.15; letter-spacing: 0.08em;
+    display: grid; place-items: center; text-align: center;
+    border-radius: 4px;
+    box-shadow: inset 0 0 0 1.5px rgba(255, 249, 242, 0.35), inset 0 0 0 4px var(--seal);
+  }
+  .brand-name { font-family: "Noto Serif SC", serif; font-weight: 700; font-size: 19px; letter-spacing: 0.06em; }
+  .brand-sub { font-size: 10px; letter-spacing: 0.28em; color: var(--ink-soft); margin-top: -3px; }
+  nav.links { display: flex; gap: 26px; margin-left: auto; font-size: 14.5px; font-weight: 500; }
+  nav.links a { color: var(--ink-soft); transition: color 0.2s; padding: 4px 0; }
+  nav.links a:hover { color: var(--ink); }
+  .nav-cta { margin-left: 8px; }
+
+  .btn {
+    display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+    font: 500 15px/1 "Noto Sans SC", sans-serif;
+    padding: 13px 26px; border-radius: 4px; border: 1px solid transparent;
+    cursor: pointer; transition: transform 0.18s, box-shadow 0.18s, background 0.18s, border-color 0.18s;
+    white-space: nowrap;
+  }
+  .btn-primary { background: var(--btn-bg); color: var(--btn-fg); }
+  .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 10px 24px -10px var(--ring); }
+  .btn-ghost { border-color: var(--line); color: var(--ink); background: transparent; }
+  .btn-ghost:hover { border-color: var(--gold); color: var(--gold); }
+  .btn-sm { padding: 9px 18px; font-size: 13.5px; }
+
+  /* ── 区块公共 ─────────────────────────────────────── */
+  section { padding: 96px 0; }
+  .band { background: var(--surface-tint); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+  .eyebrow {
+    display: inline-flex; align-items: center; gap: 10px;
+    font-size: 12.5px; font-weight: 700; letter-spacing: 0.3em;
+    color: var(--gold); margin-bottom: 18px;
+  }
+  .eyebrow::before { content: ""; width: 9px; height: 9px; background: var(--seal); border-radius: 2px; }
+  .sec-title { font-size: clamp(26px, 3.6vw, 38px); font-weight: 700; margin-bottom: 14px; }
+  .sec-lead { color: var(--ink-soft); max-width: 34em; font-size: 16.5px; }
+  .sec-head { margin-bottom: 52px; }
+
+  /* ── Hero ─────────────────────────────────────────── */
+  .hero { padding: 84px 0 100px; position: relative; overflow: hidden; }
+  .hero-grid { display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr); gap: 48px; align-items: center; }
+  .hero h1 {
+    font-size: clamp(34px, 5vw, 54px); font-weight: 900; line-height: 1.25;
+    letter-spacing: 0.01em; margin: 20px 0 22px;
+  }
+  .hero h1 .u {
+    background: linear-gradient(transparent 68%, var(--gold-fill) 68%, var(--gold-fill) 94%, transparent 94%);
+  }
+  .hero-lead { color: var(--ink-soft); font-size: 17.5px; max-width: 27em; margin-bottom: 36px; }
+  .hero-ctas { display: flex; gap: 14px; flex-wrap: wrap; }
+  .hero-note { margin-top: 18px; font-size: 13px; color: var(--ink-soft); letter-spacing: 0.02em; }
+  .vertical-mark {
+    position: absolute; right: max(12px, calc((100vw - 1120px) / 2 - 64px)); top: 96px;
+    writing-mode: vertical-rl; font-family: "Noto Serif SC", serif;
+    font-size: 14px; letter-spacing: 0.55em; color: var(--gold);
+    border-left: 1px solid var(--line); padding-left: 14px; opacity: 0.85;
+  }
+
+  /* 平板模拟图(量产后替换为真机实拍) */
+  .stage { position: relative; display: grid; place-items: center; min-height: 480px; }
+  .stage .glyph {
+    position: absolute; font-family: "Noto Serif SC", serif; font-weight: 900;
+    font-size: 360px; line-height: 1; color: var(--gold-fill); opacity: 0.09;
+    user-select: none; pointer-events: none; transform: translate(6%, -2%);
+  }
+  .stage .glow {
+    position: absolute; width: 380px; height: 380px; border-radius: 50%;
+    background: radial-gradient(circle, var(--gold-wash), transparent 65%);
+  }
+  .tablet {
+    position: relative; width: 296px; background: #232B33;
+    border-radius: 26px; padding: 12px;
+    box-shadow: var(--shadow), inset 0 0 0 1.5px rgba(255, 255, 255, 0.08);
+    animation: float 7s ease-in-out infinite;
+  }
+  @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+  .tablet::after {
+    content: ""; position: absolute; top: 12px; right: -7px; width: 3px; height: 44px;
+    background: #3A434C; border-radius: 2px;
+  }
+  /* 屏幕内 UI 使用固定浅色,不随站点主题变化(它是一块屏幕) */
+  .screen {
+    background: #F6F7F9; color: #22303E; border-radius: 16px;
+    padding: 16px 15px 12px; font-size: 12px; line-height: 1.5;
+  }
+  .scr-status { display: flex; justify-content: space-between; font-size: 10px; color: #8B97A3; margin-bottom: 12px; }
+  .scr-hello { font-weight: 700; font-size: 14.5px; }
+  .scr-sub { color: #8B97A3; font-size: 10.5px; margin-bottom: 12px; }
+  .scr-ring { display: flex; align-items: center; gap: 12px; background: #FFFFFF; border-radius: 12px; padding: 12px; margin-bottom: 10px; box-shadow: 0 4px 14px -8px rgba(34, 48, 62, 0.25); }
+  .scr-ring b { font-size: 13px; display: block; }
+  .scr-ring small { color: #8B97A3; font-size: 10px; }
+  .task { display: flex; align-items: center; gap: 9px; background: #FFFFFF; border-radius: 10px; padding: 9px 11px; margin-bottom: 7px; }
+  .task .dot { width: 20px; height: 20px; border-radius: 50%; flex: none; display: grid; place-items: center; font-size: 11px; color: #fff; }
+  .task b { font-size: 11.5px; display: block; line-height: 1.35; }
+  .task small { color: #98A3AE; font-size: 9.5px; }
+  .task .st { margin-left: auto; font-size: 9px; color: #8B97A3; white-space: nowrap; }
+  .streak {
+    display: flex; align-items: center; justify-content: center; gap: 6px;
+    background: linear-gradient(135deg, #F8EFD8, #F2E3BC); color: #7A5E1E;
+    border-radius: 10px; padding: 8px; font-size: 10.5px; font-weight: 700; margin-top: 10px;
+  }
+  .scr-tabbar { display: flex; justify-content: space-around; color: #A6B0BA; font-size: 9px; padding-top: 10px; margin-top: 10px; border-top: 1px solid #E8EBEE; }
+  .scr-tabbar b { color: #B8923D; }
+  .stage .chip {
+    position: absolute; background: var(--surface); border: 1px solid var(--line);
+    border-radius: 6px; padding: 9px 13px; font-size: 12px; box-shadow: var(--shadow);
+  }
+  .stage .chip b { display: block; font-size: 12.5px; }
+  .stage .chip small { color: var(--ink-soft); font-size: 10.5px; }
+  .chip-a { left: 2%; top: 16%; }
+  .chip-b { right: 0; bottom: 14%; }
+
+  /* ── 信任条 ───────────────────────────────────────── */
+  .facts { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; background: var(--line); border: 1px solid var(--line); }
+  .fact { background: var(--surface); padding: 30px 26px; }
+  .fact .num {
+    font-family: "Noto Serif SC", serif; font-weight: 900; font-size: 38px;
+    font-variant-numeric: tabular-nums; line-height: 1.1;
+  }
+  .fact .num em { font-style: normal; font-size: 18px; margin-left: 3px; color: var(--gold); }
+  .fact p { color: var(--ink-soft); font-size: 13.5px; margin-top: 6px; }
+  .facts-cap { font-size: 12.5px; color: var(--ink-soft); margin-top: 14px; letter-spacing: 0.02em; }
+
+  /* ── 卡片 ─────────────────────────────────────────── */
+  .cards { display: grid; gap: 22px; }
+  .cards-3 { grid-template-columns: repeat(3, 1fr); }
+  .cards-4 { grid-template-columns: repeat(4, 1fr); }
+  .card {
+    background: var(--surface); border: 1px solid var(--line); border-radius: 6px;
+    padding: 30px 28px; transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s;
+  }
+  .card:hover { transform: translateY(-3px); border-color: var(--gold); box-shadow: var(--shadow); }
+  .card .ico { width: 42px; height: 42px; border-radius: 8px; background: var(--gold-wash); display: grid; place-items: center; margin-bottom: 18px; color: var(--gold); }
+  .card h3 { font-size: 18.5px; margin-bottom: 9px; }
+  .card p { color: var(--ink-soft); font-size: 14.5px; }
+  .card .go { display: inline-block; margin-top: 16px; font-size: 13.5px; font-weight: 700; color: var(--gold); }
+
+  .badge {
+    display: inline-block; font-size: 11.5px; font-weight: 700; letter-spacing: 0.14em;
+    padding: 4px 12px; border-radius: 999px; vertical-align: middle;
+  }
+  .badge-dev { background: var(--gold-wash); color: var(--gold); border: 1px solid var(--gold-fill); }
+  .badge-live { background: rgba(46, 125, 90, 0.12); color: #2E7D5A; border: 1px solid rgba(46, 125, 90, 0.4); }
+  :root[data-theme="dark"] .badge-live { color: #6FBF9A; }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .badge-live { color: #6FBF9A; } }
+
+  /* 产品分栏 */
+  .duo { display: grid; grid-template-columns: 1fr 1fr; gap: 56px; align-items: center; }
+  .feature-list { list-style: none; display: grid; gap: 15px; margin-top: 26px; }
+  .feature-list li { display: flex; gap: 13px; }
+  .feature-list .tick {
+    flex: none; width: 22px; height: 22px; margin-top: 3px; border-radius: 50%;
+    background: var(--gold-wash); color: var(--gold);
+    display: grid; place-items: center; font-size: 12px; font-weight: 700;
+  }
+  .feature-list b { display: block; font-size: 15.5px; }
+  .feature-list span { color: var(--ink-soft); font-size: 13.5px; }
+  .origin {
+    margin-top: 30px; border-left: 3px solid var(--gold-fill);
+    padding: 4px 0 4px 18px; color: var(--ink-soft); font-size: 14.5px;
+  }
+  .origin b { color: var(--ink); font-family: "Noto Serif SC", serif; }
+
+  /* 平板参数小卡 */
+  .spec-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .spec { background: var(--surface); border: 1px solid var(--line); border-radius: 6px; padding: 18px 20px; }
+  .spec b { font-size: 15px; display: block; margin-bottom: 3px; }
+  .spec small { color: var(--ink-soft); font-size: 12.5px; }
+
+  /* ── 确定感(为什么是我们) ───────────────────────── */
+  .why { display: grid; grid-template-columns: repeat(4, 1fr); gap: 22px; }
+  .why .card h3 { display: flex; align-items: baseline; gap: 10px; }
+  .why .idx { font-family: "Noto Serif SC", serif; color: var(--gold); font-size: 14px; }
+
+  /* ── 时间线 ───────────────────────────────────────── */
+  .timeline { display: grid; grid-template-columns: repeat(6, 1fr); gap: 0; position: relative; margin-top: 10px; }
+  .timeline::before { content: ""; position: absolute; left: 0; right: 0; top: 7px; height: 1px; background: var(--line); }
+  .t-item { position: relative; padding: 30px 18px 0 0; }
+  .t-item::before {
+    content: ""; position: absolute; top: 2px; left: 0; width: 11px; height: 11px;
+    background: var(--bg); border: 2.5px solid var(--gold); border-radius: 50%;
+  }
+  .t-item.now::before { background: var(--seal); border-color: var(--seal); }
+  .t-item time { font-family: "Noto Serif SC", serif; font-weight: 700; font-size: 15px; display: block; }
+  .t-item p { font-size: 13px; color: var(--ink-soft); margin-top: 5px; }
+
+  /* ── 资质 ─────────────────────────────────────────── */
+  .certs { display: grid; grid-template-columns: repeat(4, 1fr); gap: 22px; }
+  .cert { border: 1px dashed var(--line); border-radius: 6px; padding: 24px; text-align: center; background: var(--surface); }
+  .cert .stamp {
+    width: 46px; height: 46px; margin: 0 auto 14px; border-radius: 6px;
+    border: 1.5px solid var(--seal); color: var(--seal);
+    display: grid; place-items: center; font-family: "Noto Serif SC", serif; font-weight: 700; font-size: 15px;
+  }
+  .cert b { display: block; font-size: 15px; }
+  .cert small { color: var(--ink-soft); font-size: 12px; }
+
+  /* ── 流程 ─────────────────────────────────────────── */
+  .steps { display: grid; grid-template-columns: repeat(4, 1fr); gap: 22px; counter-reset: step; }
+  .step { position: relative; background: var(--surface); border: 1px solid var(--line); border-radius: 6px; padding: 28px 26px 26px; }
+  .step::before {
+    counter-increment: step; content: counter(step, cjk-ideographic);
+    position: absolute; top: -16px; left: 22px;
+    background: var(--seal); color: var(--seal-fg);
+    font-family: "Noto Serif SC", serif; font-weight: 700; font-size: 14px;
+    width: 32px; height: 32px; border-radius: 6px; display: grid; place-items: center;
+  }
+  .step h3 { font-size: 17px; margin: 6px 0 8px; }
+  .step p { color: var(--ink-soft); font-size: 13.5px; }
+
+  /* ── 留资 ─────────────────────────────────────────── */
+  .contact-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 56px; align-items: start; }
+  .contact h2 { font-size: clamp(26px, 3.4vw, 36px); margin-bottom: 16px; }
+  .contact .ways { display: grid; gap: 14px; margin-top: 30px; }
+  .way { display: flex; align-items: center; gap: 14px; font-size: 14.5px; }
+  .way .k { flex: none; width: 74px; color: var(--ink-soft); font-size: 13px; letter-spacing: 0.1em; }
+  .qr {
+    width: 108px; height: 108px; border: 1px dashed var(--line); border-radius: 8px;
+    display: grid; place-items: center; color: var(--ink-soft); font-size: 11px; text-align: center;
+    background: var(--surface); margin-top: 8px;
+  }
+  form.lead { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 34px; display: grid; gap: 18px; }
+  .field label { display: block; font-size: 13px; font-weight: 700; margin-bottom: 7px; letter-spacing: 0.04em; }
+  .field :is(input, select, textarea) {
+    width: 100%; background: var(--bg); border: 1px solid var(--line); border-radius: 5px;
+    color: var(--ink); font: 400 14.5px/1.5 "Noto Sans SC", sans-serif; padding: 12px 14px;
+  }
+  .field :is(input, select, textarea):focus { outline: none; border-color: var(--gold); box-shadow: 0 0 0 3px var(--gold-wash); }
+  form.lead small { color: var(--ink-soft); font-size: 12px; }
+
+  /* ── 页脚 ─────────────────────────────────────────── */
+  footer.site { border-top: 1px solid var(--line); padding: 56px 0 40px; background: var(--surface-tint); }
+  .foot-grid { display: grid; grid-template-columns: 1.4fr 1fr 1fr 1fr; gap: 40px; }
+  .foot-grid h4 { font-size: 13px; letter-spacing: 0.18em; color: var(--ink-soft); margin-bottom: 16px; font-weight: 700; }
+  .foot-grid a { display: block; font-size: 14px; color: var(--ink-soft); margin-bottom: 10px; transition: color 0.2s; }
+  .foot-grid a:hover { color: var(--gold); }
+  .foot-brand p { color: var(--ink-soft); font-size: 13px; max-width: 24em; margin-top: 14px; }
+  .legal { border-top: 1px solid var(--line); margin-top: 44px; padding-top: 22px; font-size: 12px; color: var(--ink-soft); display: flex; flex-wrap: wrap; gap: 8px 24px; }
+
+  /* ── 滚动显现 ─────────────────────────────────────── */
+  .reveal { opacity: 0; transform: translateY(16px); transition: opacity 0.6s ease, transform 0.6s ease; }
+  .reveal.in { opacity: 1; transform: none; }
+  @media (prefers-reduced-motion: reduce) {
+    .reveal { opacity: 1; transform: none; transition: none; }
+    .tablet { animation: none; }
+    html { scroll-behavior: auto; }
+  }
+
+  /* ── 响应式 ───────────────────────────────────────── */
+  @media (max-width: 980px) {
+    section { padding: 72px 0; }
+    .hero-grid, .duo, .contact-grid { grid-template-columns: 1fr; }
+    .stage { min-height: 440px; margin-top: 16px; }
+    .facts, .why, .certs, .steps { grid-template-columns: 1fr 1fr; }
+    .cards-3, .cards-4 { grid-template-columns: 1fr 1fr; }
+    .timeline { grid-template-columns: 1fr 1fr 1fr; gap: 8px 0; }
+    .timeline::before { display: none; }
+    .t-item { border-top: 1px solid var(--line); }
+    .vertical-mark { display: none; }
+    .foot-grid { grid-template-columns: 1fr 1fr; }
+  }
+  @media (max-width: 880px) { nav.links { display: none; } }
+  @media (max-width: 560px) {
+    .facts, .why, .certs, .steps, .cards-3, .cards-4, .spec-grid { grid-template-columns: 1fr; }
+    .timeline { grid-template-columns: 1fr; }
+    .stage .glyph { font-size: 260px; }
+    .chip-a { left: 0; top: 6%; }
+  }
+</style>
+
+<!-- 原型提示条:上线前删除 -->
+<div id="proto-note"><b>设计原型</b> — 页面中的品牌名、数据、资质均含占位示例,上线前逐项替换,详见 docs/strategy/02 上线检查清单</div>
+
+<header class="nav">
+  <div class="wrap nav-inner">
+    <a class="brand" href="#top" aria-label="木子教育 首页">
+      <span class="seal" aria-hidden="true">木子</span>
+      <span>
+        <span class="brand-name">木子教育</span><!-- 占位品牌名,注册前核名 -->
+        <div class="brand-sub">MUZI EDUCATION</div>
+      </span>
+    </a>
+    <nav class="links" aria-label="主导航">
+      <a href="#pad">学习平板</a>
+      <a href="#system">学习系统</a>
+      <a href="#why">为什么是我们</a>
+      <a href="#solutions">解决方案</a>
+      <a href="#about">关于我们</a>
+    </nav>
+    <a class="btn btn-primary btn-sm nav-cta" href="#contact">预约演示</a>
+  </div>
+</header>
+
+<main id="top">
+
+  <!-- ══ Hero ══ -->
+  <section class="hero">
+    <span class="vertical-mark" aria-hidden="true">因材施教 · 久久为功</span>
+    <div class="wrap hero-grid">
+      <div>
+        <span class="eyebrow">AI 自适应学习 · 软硬件一体</span>
+        <h1>每个孩子,<br>都值得一位<span class="u">懂他</span>的老师。</h1>
+        <p class="hero-lead">木子教育把自适应学习系统,装进一块为孩子设计的平板。让 AI 因材施教,让家长看得明白,让学习这件事回到孩子自己的节奏。</p>
+        <div class="hero-ctas">
+          <a class="btn btn-primary" href="#contact">预约平板首发体验</a>
+          <a class="btn btn-ghost" href="#solutions">学校与渠道合作</a>
+        </div>
+        <p class="hero-note">学习系统已上线可试用 · 学习平板研发中,首发开放预约</p>
+      </div>
+      <div class="stage" aria-label="学习平板界面示意(CSS 模拟,量产后替换实拍图)">
+        <span class="glyph" aria-hidden="true">学</span>
+        <span class="glow" aria-hidden="true"></span>
+        <div class="tablet">
+          <div class="screen">
+            <div class="scr-status"><span>9:41</span><span>护眼模式 · 已开启</span></div>
+            <div class="scr-hello">下午好,小雨</div>
+            <div class="scr-sub">今天的计划由 AI 根据昨天的错题调整</div>
+            <div class="scr-ring">
+              <svg width="46" height="46" viewBox="0 0 46 46" aria-hidden="true">
+                <circle cx="23" cy="23" r="19" fill="none" stroke="#EDE3C8" stroke-width="5"/>
+                <circle cx="23" cy="23" r="19" fill="none" stroke="#C9A44C" stroke-width="5"
+                        stroke-linecap="round" stroke-dasharray="119.4" stroke-dashoffset="33.4"
+                        transform="rotate(-90 23 23)"/>
+                <text x="23" y="27" text-anchor="middle" font-size="11" font-weight="700" fill="#7A5E1E">72%</text>
+              </svg>
+              <div><b>今日任务进度</b><small>再完成 1 项就全部达成</small></div>
+            </div>
+            <div class="task">
+              <span class="dot" style="background:#5AA57C">✓</span>
+              <span><b>语文 · 古诗三首</b><small>背诵 + 默写练习</small></span>
+              <span class="st">已完成</span>
+            </div>
+            <div class="task">
+              <span class="dot" style="background:#C9A44C">▶</span>
+              <span><b>数学 · 分数应用题</b><small>错题变式 6 道</small></span>
+              <span class="st">进行中</span>
+            </div>
+            <div class="task">
+              <span class="dot" style="background:#B9C2CB">3</span>
+              <span><b>英语 · Unit 6 词汇</b><small>间隔复习 · 第 4 轮</small></span>
+              <span class="st">待开始</span>
+            </div>
+            <div class="streak">🔥 连续学习 23 天 · 小宠物长大了一级</div>
+            <div class="scr-tabbar"><b>今日</b><span>错题本</span><span>宠物岛</span><span>家长</span></div>
+          </div>
+        </div>
+        <div class="chip chip-a reveal">
+          <b>家长周报已生成</b>
+          <small>本周薄弱点:分数通分</small>
+        </div>
+        <div class="chip chip-b reveal">
+          <b>全程无广告</b>
+          <small>无信息流 · 无内购诱导</small>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ 信任条:只放可验证的事实 ══ -->
+  <section class="band" style="padding: 64px 0;">
+    <div class="wrap reveal">
+      <div class="facts">
+        <div class="fact"><div class="num">2<em>款</em></div><p>在线教育产品运营中,注册即可试用</p></div>
+        <div class="fact"><div class="num">18<em>个</em></div><p>AI 工具开源在 GitHub,代码公开可查</p></div>
+        <div class="fact"><div class="num serif">实时</div><p>运营数据公开在官网,不藏失败,不美化数字</p></div>
+        <div class="fact"><div class="num">1<em>位</em></div><p>创始人对每一台设备、每一次更新直接负责</p></div>
+      </div>
+      <p class="facts-cap">※ 我们只展示可以被验证的事实。用户量、题库量等数据将随公开数据面板实时更新。<!-- 占位:接入真实数据面板后替换此说明 --></p>
+    </div>
+  </section>
+
+  <!-- ══ 学习平板(旗舰 · 研发中) ══ -->
+  <section id="pad">
+    <div class="wrap">
+      <div class="sec-head reveal">
+        <span class="eyebrow">旗舰产品</span>
+        <h2 class="sec-title">木子学伴平板 <span class="badge badge-dev">研发中 · 开放预约</span></h2><!-- 占位产品名 -->
+        <p class="sec-lead">不是装了学习软件的普通平板,而是一台从系统层为「学习」重新设计的设备——没有应用商店的诱惑,只有孩子自己的学习节奏。</p>
+      </div>
+      <div class="duo">
+        <ul class="feature-list reveal">
+          <li><span class="tick">✓</span><span><b>系统级专注</b><span>无第三方应用、无信息流、无广告,开机即学习</span></span></li>
+          <li><span class="tick">✓</span><span><b>AI 因材施教</b><span>内置自适应学习引擎,难度、节奏、复习计划因孩子而异</span></span></li>
+          <li><span class="tick">✓</span><span><b>家长管控中心</b><span>时长、内容、进度,家长手机端一目了然,规则由家庭决定</span></span></li>
+          <li><span class="tick">✓</span><span><b>护眼为先</b><span>硬件级护眼方案与用眼提醒(具体屏幕方案以量产为准)</span></span></li><!-- 占位:硬件参数以实际立项为准 -->
+        </ul>
+        <div class="spec-grid reveal">
+          <div class="spec"><b>类纸护眼屏</b><small>方案选型中 · 占位</small></div>
+          <div class="spec"><b>坐姿与距离提醒</b><small>方案选型中 · 占位</small></div>
+          <div class="spec"><b>离线学习模式</b><small>核心内容本地可用</small></div>
+          <div class="spec"><b>持续 OTA 更新</b><small>系统与内容随订阅迭代</small></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ 学习系统(已上线) ══ -->
+  <section id="system" class="band">
+    <div class="wrap">
+      <div class="sec-head reveal">
+        <span class="eyebrow">已在运行的核心</span>
+        <h2 class="sec-title">ChineseLearn 自适应学习系统 <span class="badge badge-live">已上线</span></h2>
+        <p class="sec-lead">平板不是从零开始的故事——它搭载的学习系统已经在真实家庭中运行,每周迭代。</p>
+      </div>
+      <div class="cards cards-4 reveal">
+        <div class="card">
+          <div class="ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 3v18M5 8l7-5 7 5M5 16l7 5 7-5"/></svg></div>
+          <h3>自适应出题</h3><p>根据答题记录动态调整难度与题型,不重复刷会的题。</p>
+        </div>
+        <div class="card">
+          <div class="ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg></div>
+          <h3>间隔重复记忆</h3><p>遗忘曲线驱动的复习计划,记住的东西真正留下来。</p>
+        </div>
+        <div class="card">
+          <div class="ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 21s-7-4.5-9-9a5 5 0 0 1 9-3 5 5 0 0 1 9 3c-2 4.5-9 9-9 9z"/></svg></div>
+          <h3>游戏化激励</h3><p>养成系小宠物与连续学习记录,动力来自孩子自己。</p>
+        </div>
+        <div class="card">
+          <div class="ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 19V5a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v14M4 19a2 2 0 0 0 2 2h14M8 9h8M8 13h5"/></svg></div>
+          <h3>家长周报</h3><p>学了什么、薄弱在哪,每周一份看得懂的报告。</p>
+        </div>
+      </div>
+      <p class="origin reveal">这套系统的第一位用户,是创始人<b>五年级的女儿</b>。我们先把它做到自己家孩子愿意每天用,才拿出来给你。</p>
+    </div>
+  </section>
+
+  <!-- ══ 为什么是我们(确定感) ══ -->
+  <section id="why">
+    <div class="wrap">
+      <div class="sec-head reveal">
+        <span class="eyebrow">确定感,可以验证</span>
+        <h2 class="sec-title">一家小公司,凭什么让你放心?</h2>
+        <p class="sec-lead">我们不靠规模话术。教育是长期的事,你需要的每一分确定感,我们都给出可以被第三方验证的证据。</p>
+      </div>
+      <div class="why reveal">
+        <div class="card"><h3><span class="idx">壹</span>数据公开</h3><p>运营数据实时公开在官网——不藏失败,不美化数字。你看到的,就是真实的经营状态。</p></div>
+        <div class="card"><h3><span class="idx">贰</span>代码开源</h3><p>18 个工具开源在 GitHub,任何工程师都可以审阅我们的技术与做事方式。</p></div>
+        <div class="card"><h3><span class="idx">叁</span>创始人直连</h3><p>没有客服转接。产品问题、合作洽谈,微信直达创始人本人,响应以小时计。</p></div>
+        <div class="card"><h3><span class="idx">肆</span>长期主义</h3><p>每周公开更新日志,历史全部可查。我们想做中国 AI 教育的长期主义者,时间是最好的背书。</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ 解决方案 ══ -->
+  <section id="solutions" class="band">
+    <div class="wrap">
+      <div class="sec-head reveal">
+        <span class="eyebrow">解决方案</span>
+        <h2 class="sec-title">家庭、学校与渠道,各有一条路</h2>
+      </div>
+      <div class="cards cards-3 reveal">
+        <div class="card">
+          <h3>家庭</h3>
+          <p>先免费试用学习系统,再决定是否预约平板。孩子的数据只属于你的家庭。</p>
+          <a class="go" href="#contact">试用学习系统 →</a>
+        </div>
+        <div class="card">
+          <h3>学校与机构</h3>
+          <p>班级维度的学情看板与批量部署方案,按校情定制内容范围与管控策略。</p>
+          <a class="go" href="#contact">预约机构演示 →</a>
+        </div>
+        <div class="card">
+          <h3>渠道合作</h3>
+          <p>面向教育硬件渠道与区域代理,提供样机、物料与培训支持。首发渠道招募中。</p>
+          <a class="go" href="#contact">获取合作方案 →</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ 关于:发展历程 ══ -->
+  <section id="about">
+    <div class="wrap">
+      <div class="sec-head reveal">
+        <span class="eyebrow">关于我们</span>
+        <h2 class="sec-title">一步一步,走到今天</h2>
+        <p class="sec-lead">我们相信 AI 会重新定义中国孩子的学习方式。这不是一句口号,而是一条已经走了几年的路。</p>
+      </div>
+      <div class="timeline reveal"><!-- 占位:年份与事件按真实经历校准 -->
+        <div class="t-item"><time>2025</time><p>独立开发之路开始,持续公开构建(占位年份)</p></div>
+        <div class="t-item"><time>2026.05</time><p>18 个 AI 工具集中开源</p></div>
+        <div class="t-item"><time>2026</time><p>ChineseLearn 上线,第一位用户是创始人的女儿</p></div>
+        <div class="t-item"><time>2026</time><p>EQ Trainer 上线,验证第二条产品线</p></div>
+        <div class="t-item now"><time>现在</time><p>学习平板立项研发,软硬件一体</p></div>
+        <div class="t-item"><time>下一站</time><p>平板首发,首批渠道与家庭招募中</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ 资质与承诺 ══ -->
+  <section class="band">
+    <div class="wrap">
+      <div class="sec-head reveal">
+        <span class="eyebrow">资质与承诺</span>
+        <h2 class="sec-title">合规,是教育公司的底线</h2>
+        <p class="sec-lead">以下资质均在办理/更新中,取得后将逐项公示编号,可在官方渠道核验。<!-- 占位:未取得的资质项上线时先隐藏 --></p>
+      </div>
+      <div class="certs reveal">
+        <div class="cert"><div class="stamp">软</div><b>软件著作权</b><small>登记号公示 · 占位</small></div>
+        <div class="cert"><div class="stamp">商</div><b>注册商标</b><small>申请进度公示 · 占位</small></div>
+        <div class="cert"><div class="stamp">备</div><b>教育 App 备案</b><small>备案号公示 · 占位</small></div>
+        <div class="cert"><div class="stamp">护</div><b>儿童信息保护</b><small>保护规则全文公开 · 占位</small></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ 合作流程 ══ -->
+  <section>
+    <div class="wrap">
+      <div class="sec-head reveal">
+        <span class="eyebrow">合作流程</span>
+        <h2 class="sec-title">四步,从了解到交付</h2>
+      </div>
+      <div class="steps reveal" style="margin-top: 34px;">
+        <div class="step"><h3>沟通需求</h3><p>30 分钟免费咨询,聊清楚孩子或机构的真实情况。</p></div>
+        <div class="step"><h3>方案与报价</h3><p>48 小时内给出书面方案,分档报价、边界清晰。</p></div>
+        <div class="step"><h3>试用体验</h3><p>系统先用起来,平板先摸到样机,再谈签约。</p></div>
+        <div class="step"><h3>交付与陪跑</h3><p>里程碑交付,之后是持续的更新与响应,而非一锤子买卖。</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ 留资 ══ -->
+  <section id="contact" class="band">
+    <div class="wrap contact-grid">
+      <div class="contact reveal">
+        <span class="eyebrow">联系合作</span>
+        <h2>聊聊你的孩子,<br>或你的渠道。</h2>
+        <p class="sec-lead">无论是想让孩子先试用,还是学校、渠道想看方案,留下方式,创始人会亲自回复。</p>
+        <div class="ways">
+          <div class="way"><span class="k">微 信</span><div><div class="qr">二维码占位<br>(上线前替换)</div></div></div>
+          <div class="way"><span class="k">邮 箱</span><span>hello@example.com <small style="color:var(--ink-soft)">(占位,替换为对外邮箱)</small></span></div>
+          <div class="way"><span class="k">官 网</span><span>muzi.studio(现主站,改版后迁移)</span></div>
+        </div>
+      </div>
+      <form class="lead reveal" onsubmit="return demoSubmit(event)">
+        <div class="field"><label for="f-name">称呼</label><input id="f-name" name="name" placeholder="怎么称呼您" required></div>
+        <div class="field"><label for="f-role">您的身份</label>
+          <select id="f-role" name="role">
+            <option>家长 — 想让孩子试用/预约平板</option>
+            <option>学校/机构 — 想看部署方案</option>
+            <option>渠道/代理 — 想谈合作</option>
+            <option>其他</option>
+          </select>
+        </div>
+        <div class="field"><label for="f-wx">微信号或手机号</label><input id="f-wx" name="contact" placeholder="用于创始人与您联系" required></div>
+        <div class="field"><label for="f-msg">想聊什么(选填)</label><textarea id="f-msg" name="msg" rows="3" placeholder="孩子年级、学校规模、渠道区域……"></textarea></div>
+        <button class="btn btn-primary" type="submit">提交,等创始人联系我</button>
+        <small>提交即表示同意《隐私政策》(占位链接)。我们只用这些信息与您联系,不作他用。</small>
+      </form>
+    </div>
+  </section>
+</main>
+
+<footer class="site">
+  <div class="wrap">
+    <div class="foot-grid">
+      <div class="foot-brand">
+        <a class="brand" href="#top">
+          <span class="seal" aria-hidden="true">木子</span>
+          <span><span class="brand-name">木子教育</span><div class="brand-sub">MUZI EDUCATION</div></span>
+        </a>
+        <p>AI 自适应学习系统与学习平板。让技术回到教育本身,做时间的朋友。</p>
+      </div>
+      <div>
+        <h4>产品</h4>
+        <a href="#pad">木子学伴平板</a>
+        <a href="#system">ChineseLearn</a>
+        <a href="#top">EQ Trainer</a>
+        <a href="#top">免费 AI 工具</a>
+      </div>
+      <div>
+        <h4>公司</h4>
+        <a href="#about">关于我们</a>
+        <a href="#why">公开数据面板</a>
+        <a href="#top">更新日志</a>
+        <a href="#top">定制开发服务</a>
+      </div>
+      <div>
+        <h4>合规</h4>
+        <a href="#top">隐私政策(占位)</a>
+        <a href="#top">儿童个人信息保护规则(占位)</a>
+        <a href="#top">用户协议(占位)</a>
+      </div>
+    </div>
+    <div class="legal"><!-- 占位:公司全称/备案号上线前替换,备案号需链接工信部备案系统 -->
+      <span>© 2026 木子教育科技有限公司(占位全称)</span>
+      <span>京ICP备XXXXXXXX号(占位)</span>
+      <span>本页面为设计原型,数据与资质信息含占位示例</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+  (function () {
+    var reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    var items = document.querySelectorAll(".reveal");
+    if (reduced || !("IntersectionObserver" in window)) {
+      items.forEach(function (el) { el.classList.add("in"); });
+      return;
+    }
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) {
+        if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target); }
+      });
+    }, { threshold: 0.12 });
+    items.forEach(function (el) { io.observe(el); });
+  })();
+
+  function demoSubmit(e) {
+    e.preventDefault();
+    alert("原型演示:表单尚未接入后端。\n上线时接现有 LeadCapture / LeadPipe 组件。");
+    return false;
+  }
+</script>
