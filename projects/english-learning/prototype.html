@@ -1,0 +1,1092 @@
+<title>萌宠英语岛</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Noto+Sans+SC:wght@400;500;700;900&display=swap">
+
+<!--
+  ══════════════════════════════════════════════════════════════
+  萌宠英语岛(工作名) · 交互原型
+  客户需求:牛津译林版 7-9 年级英语学习网站
+  · 可点玩的完整核心循环:每日任务 → 积分 → 盲盒 → 宠物
+  · 单词/拼写/课文跟读(浏览器 TTS 发音)、情景对话、单元小测
+  · 动画区时段门禁:家长开关 && (周末 || 寒暑假) —— 真实日期逻辑
+  · 所有单词释义与例句为原创示例;课文为原创同主题短文
+    (教材原文与配套音频需版权授权,见 README 第 3 节)
+  · 演示数据存在浏览器本地,右上角 ⚙ 家长中心可重置
+  ══════════════════════════════════════════════════════════════
+-->
+
+<style>
+  :root {
+    --bg: #FDF7EC;
+    --surface: #FFFFFF;
+    --sunken: #F6EEDD;
+    --ink: #33302A;
+    --muted: #8A8274;
+    --line: #EDE4D0;
+    --green: #2EAF7D;
+    --green-soft: rgba(46, 175, 125, 0.13);
+    --yellow: #FFB937;
+    --yellow-soft: rgba(255, 185, 55, 0.16);
+    --coral: #FF6B4A;
+    --coral-soft: rgba(255, 107, 74, 0.12);
+    --blue: #4C9EEB;
+    --blue-soft: rgba(76, 158, 235, 0.13);
+    --purple: #9B6DFF;
+    --purple-soft: rgba(155, 109, 255, 0.13);
+    --shadow: 0 14px 34px -16px rgba(51, 48, 42, 0.28);
+    --ring: rgba(46, 175, 125, 0.5);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #181D28;
+      --surface: #212836;
+      --sunken: #1C2230;
+      --ink: #F0EDE5;
+      --muted: #98A0AE;
+      --line: #313A4C;
+      --green: #3DC08D;
+      --green-soft: rgba(61, 192, 141, 0.15);
+      --yellow: #FFC155;
+      --yellow-soft: rgba(255, 193, 85, 0.14);
+      --coral: #FF7D5E;
+      --coral-soft: rgba(255, 125, 94, 0.15);
+      --blue: #63ACF2;
+      --blue-soft: rgba(99, 172, 242, 0.15);
+      --purple: #AC85FF;
+      --purple-soft: rgba(172, 133, 255, 0.16);
+      --shadow: 0 14px 34px -16px rgba(0, 0, 0, 0.6);
+      --ring: rgba(61, 192, 141, 0.55);
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #181D28;
+    --surface: #212836;
+    --sunken: #1C2230;
+    --ink: #F0EDE5;
+    --muted: #98A0AE;
+    --line: #313A4C;
+    --green: #3DC08D;
+    --green-soft: rgba(61, 192, 141, 0.15);
+    --yellow: #FFC155;
+    --yellow-soft: rgba(255, 193, 85, 0.14);
+    --coral: #FF7D5E;
+    --coral-soft: rgba(255, 125, 94, 0.15);
+    --blue: #63ACF2;
+    --blue-soft: rgba(99, 172, 242, 0.15);
+    --purple: #AC85FF;
+    --purple-soft: rgba(172, 133, 255, 0.16);
+    --shadow: 0 14px 34px -16px rgba(0, 0, 0, 0.6);
+    --ring: rgba(61, 192, 141, 0.55);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg); color: var(--ink);
+    font-family: "Noto Sans SC", "PingFang SC", "Microsoft YaHei", sans-serif;
+    font-size: 15px; line-height: 1.7; -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+  button { font-family: inherit; cursor: pointer; border: none; background: none; color: inherit; }
+  button:focus-visible, a:focus-visible, input:focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; border-radius: 8px; }
+  .en { font-family: "Baloo 2", "Noto Sans SC", sans-serif; }
+
+  .app { max-width: 540px; margin: 0 auto; min-height: 100vh; padding-bottom: 92px; }
+
+  /* ── 顶部 HUD ─────────────────────────────────────── */
+  .hud {
+    position: sticky; top: 0; z-index: 40;
+    background: color-mix(in srgb, var(--bg) 90%, transparent);
+    backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--line);
+    padding: 12px 18px; display: flex; align-items: center; gap: 10px;
+  }
+  .hud .logo { font-weight: 900; font-size: 16.5px; display: flex; align-items: center; gap: 7px; }
+  .hud .logo small { font-size: 10px; color: var(--muted); font-weight: 500; letter-spacing: 0.06em; }
+  .hud .sp { flex: 1; }
+  .chipstat {
+    display: inline-flex; align-items: center; gap: 5px;
+    background: var(--surface); border: 1px solid var(--line); border-radius: 999px;
+    padding: 5px 12px; font-size: 13px; font-weight: 700;
+  }
+  .chipstat .en { font-size: 14px; }
+  .gear { font-size: 17px; padding: 5px 7px; border-radius: 10px; background: var(--surface); border: 1px solid var(--line); }
+
+  .gradebar { display: flex; gap: 8px; padding: 14px 18px 4px; align-items: center; }
+  .gradebar span { font-size: 12.5px; color: var(--muted); margin-right: 2px; }
+  .gpill {
+    border: 1.5px solid var(--line); background: var(--surface);
+    border-radius: 999px; padding: 5px 16px; font-size: 13.5px; font-weight: 700; color: var(--muted);
+    transition: all 0.15s;
+  }
+  .gpill.on { background: var(--green); border-color: var(--green); color: #fff; }
+
+  .screen { display: none; padding: 14px 18px 20px; animation: fadein 0.25s ease; }
+  .screen.on { display: block; }
+  @keyframes fadein { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+
+  /* ── 通用卡片 ─────────────────────────────────────── */
+  .card {
+    background: var(--surface); border: 1px solid var(--line); border-radius: 18px;
+    padding: 18px; margin-bottom: 14px;
+  }
+  .card h3 { font-size: 16px; font-weight: 900; display: flex; align-items: center; gap: 8px; }
+  .hint { font-size: 12px; color: var(--muted); }
+  .btn {
+    display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+    border-radius: 999px; padding: 11px 22px; font-size: 14px; font-weight: 700;
+    transition: transform 0.15s, box-shadow 0.15s, opacity 0.15s;
+  }
+  .btn:active { transform: scale(0.96); }
+  .btn-g { background: var(--green); color: #fff; }
+  .btn-b { background: var(--blue); color: #fff; }
+  .btn-p { background: var(--purple); color: #fff; }
+  .btn-c { background: var(--coral); color: #fff; }
+  .btn-o { border: 1.5px solid var(--line); background: var(--surface); }
+  .btn-sm { padding: 7px 15px; font-size: 12.5px; }
+  .btn[disabled] { opacity: 0.45; cursor: not-allowed; }
+
+  /* ── 今日任务 ─────────────────────────────────────── */
+  .unitbanner {
+    background: linear-gradient(120deg, var(--green) 0%, #37BC90 100%);
+    color: #fff; border-radius: 20px; padding: 20px; margin-bottom: 14px;
+    position: relative; overflow: hidden;
+  }
+  .unitbanner::after {
+    content: "🏝️"; position: absolute; right: 10px; bottom: -14px; font-size: 74px; opacity: 0.3;
+  }
+  .unitbanner .tagline { font-size: 11.5px; opacity: 0.9; letter-spacing: 0.1em; font-weight: 700; }
+  .unitbanner h2 { font-size: 20px; font-weight: 900; margin: 4px 0 2px; }
+  .unitbanner .en-title { font-size: 14px; opacity: 0.95; }
+  .streakline {
+    display: flex; align-items: center; gap: 10px;
+    background: var(--coral-soft); border: 1px dashed var(--coral);
+    border-radius: 14px; padding: 10px 15px; font-size: 13px; font-weight: 700; margin-bottom: 14px;
+  }
+  .task {
+    display: flex; align-items: center; gap: 13px;
+    background: var(--surface); border: 1px solid var(--line); border-radius: 16px;
+    padding: 14px 15px; margin-bottom: 10px;
+  }
+  .task .ti { width: 42px; height: 42px; border-radius: 13px; display: grid; place-items: center; font-size: 20px; flex: none; }
+  .task .tt { flex: 1; min-width: 0; }
+  .task .tt b { font-size: 14.5px; display: block; }
+  .task .tt small { font-size: 12px; color: var(--muted); }
+  .task .pts { font-size: 12px; font-weight: 800; color: var(--yellow); white-space: nowrap; }
+  .task.done { opacity: 0.62; }
+  .task.done .go { display: none; }
+  .task .ok { display: none; font-size: 18px; }
+  .task.done .ok { display: block; }
+
+  /* ── 单词学习 ─────────────────────────────────────── */
+  .modes { display: flex; gap: 8px; margin-bottom: 14px; flex-wrap: wrap; }
+  .mode {
+    border: 1.5px solid var(--line); background: var(--surface); border-radius: 999px;
+    padding: 7px 16px; font-size: 13px; font-weight: 700; color: var(--muted);
+  }
+  .mode.on { border-color: var(--green); color: var(--green); background: var(--green-soft); }
+  .wordcard { text-align: center; padding: 30px 20px 24px; }
+  .wordcard .w { font-size: 38px; font-weight: 800; }
+  .wordcard .ipa { color: var(--muted); font-size: 15px; margin: 2px 0 10px; }
+  .speak {
+    background: var(--blue-soft); color: var(--blue); border-radius: 999px;
+    padding: 7px 18px; font-size: 14px; font-weight: 700;
+  }
+  .meaning { margin: 16px 0 4px; min-height: 66px; }
+  .meaning .m { font-size: 17px; font-weight: 700; }
+  .meaning .ex { font-size: 13.5px; color: var(--muted); margin-top: 4px; }
+  .meaning.hide .m, .meaning.hide .ex { filter: blur(7px); user-select: none; }
+  .wc-btns { display: flex; gap: 10px; justify-content: center; margin-top: 14px; }
+  .dots { display: flex; gap: 5px; justify-content: center; margin-top: 16px; }
+  .dots i { width: 8px; height: 8px; border-radius: 50%; background: var(--line); }
+  .dots i.done { background: var(--green); }
+  .dots i.cur { background: var(--yellow); }
+
+  .spellrow { display: flex; gap: 8px; margin-top: 12px; }
+  .spellrow input {
+    flex: 1; border: 1.5px solid var(--line); border-radius: 12px; background: var(--sunken);
+    padding: 11px 14px; font-size: 16px; color: var(--ink); font-family: "Baloo 2", sans-serif; font-weight: 700;
+    letter-spacing: 0.06em;
+  }
+  .spellrow input:focus { outline: none; border-color: var(--green); }
+  .feedback { min-height: 22px; font-size: 13px; font-weight: 700; margin-top: 8px; }
+  .feedback.good { color: var(--green); }
+  .feedback.bad { color: var(--coral); }
+
+  .sent { display: flex; align-items: flex-start; gap: 10px; padding: 10px 0; border-bottom: 1px dashed var(--line); }
+  .sent:last-child { border-bottom: none; }
+  .sent p { flex: 1; font-size: 14.5px; }
+  .sent .zh { font-size: 12px; color: var(--muted); }
+  .sent button { flex: none; }
+  .sent.readed p { color: var(--green); }
+
+  /* ── 情景岛 ───────────────────────────────────────── */
+  .scen {
+    display: flex; align-items: center; gap: 13px;
+    background: var(--surface); border: 1px solid var(--line); border-radius: 16px;
+    padding: 15px; margin-bottom: 10px;
+  }
+  .scen .si { width: 44px; height: 44px; border-radius: 13px; background: var(--blue-soft); display: grid; place-items: center; font-size: 21px; flex: none; }
+  .scen b { display: block; font-size: 14.5px; }
+  .scen small { color: var(--muted); font-size: 12px; }
+  .scen .lock { margin-left: auto; color: var(--muted); font-size: 13px; }
+  .chat { display: flex; flex-direction: column; gap: 10px; margin: 6px 0 14px; }
+  .bub { max-width: 84%; padding: 10px 14px; border-radius: 16px; font-size: 14px; position: relative; }
+  .bub.npc { background: var(--sunken); border: 1px solid var(--line); align-self: flex-start; border-bottom-left-radius: 5px; }
+  .bub.me { background: var(--blue); color: #fff; align-self: flex-end; border-bottom-right-radius: 5px; }
+  .bub .role { font-size: 10.5px; color: var(--muted); display: block; margin-bottom: 2px; }
+  .bub.me .role { color: rgba(255, 255, 255, 0.75); }
+  .bub .sp2 { background: none; padding: 0 4px; font-size: 13px; }
+  .choices { display: grid; gap: 8px; }
+  .choice {
+    text-align: left; border: 1.5px solid var(--line); background: var(--surface);
+    border-radius: 13px; padding: 11px 14px; font-size: 14px; transition: all 0.15s;
+  }
+  .choice:hover { border-color: var(--blue); }
+  .choice.bad { border-color: var(--coral); background: var(--coral-soft); animation: shake 0.3s; }
+  @keyframes shake { 25% { transform: translateX(-4px); } 75% { transform: translateX(4px); } }
+  .tip { font-size: 12.5px; color: var(--coral); font-weight: 700; min-height: 20px; margin-top: 6px; }
+
+  /* ── 宠物屋 ───────────────────────────────────────── */
+  .petstage {
+    background: linear-gradient(180deg, var(--green-soft), transparent 70%);
+    border: 1px solid var(--line); border-radius: 20px; padding: 22px 18px 16px;
+    text-align: center; margin-bottom: 14px;
+  }
+  .pet { width: 130px; margin: 0 auto; transition: transform 0.2s; }
+  .pet.jump { animation: jump 0.5s ease; }
+  @keyframes jump { 30% { transform: translateY(-16px) scale(1.04); } 60% { transform: translateY(0); } 80% { transform: translateY(-6px); } }
+  .pet .blink { animation: blink 4s infinite; transform-origin: center; }
+  @keyframes blink { 0%, 94%, 100% { transform: scaleY(1); } 96% { transform: scaleY(0.1); } }
+  .petname { font-weight: 900; font-size: 16px; margin-top: 6px; }
+  .petname .lv { color: var(--green); font-size: 13px; }
+  .expbar { height: 10px; background: var(--sunken); border-radius: 99px; overflow: hidden; margin: 8px auto 4px; max-width: 240px; border: 1px solid var(--line); }
+  .expbar i { display: block; height: 100%; background: linear-gradient(90deg, var(--green), #58CBA1); border-radius: 99px; transition: width 0.4s; }
+  .petacts { display: flex; gap: 10px; justify-content: center; margin-top: 12px; }
+  .inv { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; justify-content: center; }
+  .invitem {
+    display: inline-flex; align-items: center; gap: 5px; font-size: 12.5px; font-weight: 700;
+    background: var(--surface); border: 1px solid var(--line); border-radius: 999px; padding: 5px 12px;
+  }
+  .heartfloat { position: absolute; font-size: 18px; animation: floatup 0.9s ease forwards; pointer-events: none; }
+  @keyframes floatup { to { transform: translateY(-42px); opacity: 0; } }
+
+  .boxmachine { text-align: center; background: linear-gradient(135deg, var(--purple-soft), transparent); }
+  .boxvis { font-size: 56px; display: inline-block; margin: 8px 0; }
+  .boxvis.shake { animation: boxshake 0.8s ease; }
+  @keyframes boxshake { 15% { transform: rotate(-9deg); } 30% { transform: rotate(8deg); } 45% { transform: rotate(-7deg) scale(1.06); } 60% { transform: rotate(6deg) scale(1.1); } 80% { transform: rotate(-3deg) scale(1.13); } }
+  .rates { font-size: 11.5px; color: var(--muted); margin-top: 8px; }
+  .pity { font-size: 12px; font-weight: 700; color: var(--purple); margin-top: 3px; }
+
+  .friends { display: flex; gap: 12px; margin-top: 12px; }
+  .friend { flex: 1; text-align: center; background: var(--sunken); border: 1px solid var(--line); border-radius: 15px; padding: 12px 8px; position: relative; }
+  .friend .fp { font-size: 30px; }
+  .friend b { display: block; font-size: 12.5px; }
+  .friend small { color: var(--muted); font-size: 11px; display: block; margin-bottom: 6px; }
+
+  /* ── 动画片 ───────────────────────────────────────── */
+  .gate { border-radius: 16px; padding: 14px 16px; font-size: 13.5px; font-weight: 700; margin-bottom: 14px; display: flex; gap: 10px; align-items: center; }
+  .gate.open { background: var(--green-soft); border: 1px dashed var(--green); color: var(--green); }
+  .gate.closed { background: var(--coral-soft); border: 1px dashed var(--coral); color: var(--coral); }
+  .gate small { display: block; font-weight: 500; color: var(--muted); font-size: 12px; }
+  .epis { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .epi { border-radius: 16px; overflow: hidden; border: 1px solid var(--line); background: var(--surface); position: relative; }
+  .epi .cover { height: 86px; display: grid; place-items: center; font-size: 30px; color: #fff; }
+  .epi .nm { padding: 8px 12px 10px; font-size: 12.5px; font-weight: 700; }
+  .epi .nm small { display: block; color: var(--muted); font-weight: 500; font-size: 11px; }
+  .epi .lockov {
+    position: absolute; inset: 0; background: color-mix(in srgb, var(--bg) 62%, transparent);
+    backdrop-filter: blur(2.5px); -webkit-backdrop-filter: blur(2.5px);
+    display: grid; place-items: center; font-size: 24px;
+  }
+
+  /* ── 弹层 / 提示 ──────────────────────────────────── */
+  .veil {
+    position: fixed; inset: 0; background: rgba(20, 18, 14, 0.45); z-index: 90;
+    display: none; align-items: flex-end; justify-content: center; padding: 18px;
+  }
+  .veil.on { display: flex; }
+  .sheet {
+    background: var(--surface); border: 1px solid var(--line); border-radius: 22px;
+    width: 100%; max-width: 480px; padding: 24px; box-shadow: var(--shadow);
+    animation: pop 0.25s ease; max-height: 82vh; overflow-y: auto;
+  }
+  @keyframes pop { from { transform: translateY(24px); opacity: 0; } to { transform: none; opacity: 1; } }
+  .sheet h3 { font-size: 17px; font-weight: 900; margin-bottom: 12px; }
+  .setrow { display: flex; align-items: center; gap: 12px; padding: 12px 0; border-bottom: 1px dashed var(--line); }
+  .setrow .st { flex: 1; }
+  .setrow b { font-size: 14px; display: block; }
+  .setrow small { font-size: 12px; color: var(--muted); }
+  .switch { width: 46px; height: 26px; border-radius: 99px; background: var(--line); position: relative; transition: background 0.2s; flex: none; }
+  .switch::after { content: ""; position: absolute; top: 3px; left: 3px; width: 20px; height: 20px; border-radius: 50%; background: #fff; transition: left 0.2s; box-shadow: 0 1px 4px rgba(0,0,0,0.25); }
+  .switch.on { background: var(--green); }
+  .switch.on::after { left: 23px; }
+
+  .reveal-item { text-align: center; padding: 8px 0 4px; }
+  .reveal-item .big { font-size: 62px; animation: pop 0.3s ease; }
+  .rar { display: inline-block; font-size: 12px; font-weight: 800; border-radius: 999px; padding: 4px 14px; margin-top: 6px; }
+
+  #toast {
+    position: fixed; left: 50%; bottom: 104px; transform: translateX(-50%) translateY(20px);
+    background: var(--ink); color: var(--bg); border-radius: 999px; padding: 9px 20px;
+    font-size: 13.5px; font-weight: 700; opacity: 0; transition: all 0.25s; z-index: 99;
+    pointer-events: none; white-space: nowrap; max-width: 92vw;
+  }
+  #toast.on { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  /* ── 底部标签栏 ───────────────────────────────────── */
+  .tabbar {
+    position: fixed; bottom: 0; left: 0; right: 0; z-index: 50;
+    background: color-mix(in srgb, var(--surface) 94%, transparent);
+    backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+    border-top: 1px solid var(--line);
+  }
+  .tabbar .in { max-width: 540px; margin: 0 auto; display: flex; }
+  .tab { flex: 1; padding: 9px 4px 10px; text-align: center; color: var(--muted); font-size: 11px; font-weight: 700; }
+  .tab .ic { font-size: 20px; display: block; line-height: 1.3; filter: grayscale(1) opacity(0.65); }
+  .tab.on { color: var(--green); }
+  .tab.on .ic { filter: none; }
+
+  @media (prefers-reduced-motion: reduce) {
+    * { animation: none !important; transition: none !important; }
+  }
+  @media (max-width: 400px) {
+    .wordcard .w { font-size: 31px; }
+    .friends { flex-wrap: wrap; }
+  }
+</style>
+
+<div class="app">
+  <!-- HUD -->
+  <div class="hud">
+    <div class="logo">🏝️ <span>萌宠英语岛<br><small>牛津译林版 · 演示原型</small></span></div>
+    <div class="sp"></div>
+    <span class="chipstat">🪙 <span class="en" id="hud-pts">0</span></span>
+    <span class="chipstat">🔥 <span class="en" id="hud-streak">0</span>天</span>
+    <button class="gear" id="btn-parent" aria-label="家长中心">⚙️</button>
+  </div>
+
+  <div class="gradebar" role="tablist" aria-label="年级">
+    <span>年级</span>
+    <button class="gpill" data-g="7">七年级</button>
+    <button class="gpill" data-g="8">八年级</button>
+    <button class="gpill" data-g="9">九年级</button>
+  </div>
+
+  <!-- ══ 今日任务 ══ -->
+  <div class="screen" id="scr-home">
+    <div class="unitbanner">
+      <div class="tagline">本周单元 · UNIT 1</div>
+      <h2 id="ub-zh">新学期,认识我!</h2>
+      <div class="en-title en" id="ub-en">This is me!</div>
+    </div>
+    <div class="streakline">🔥 连续学习 <span class="en" id="streak2">5</span> 天 · 再坚持 2 天领「风味粮 ×1」</div>
+    <div class="task" id="task-w">
+      <div class="ti" style="background: var(--green-soft)">📖</div>
+      <div class="tt"><b>学 8 个新单词</b><small>Unit 1 核心词汇</small></div>
+      <span class="pts">+20</span>
+      <button class="btn btn-g btn-sm go" data-nav="words">去完成</button><span class="ok">✅</span>
+    </div>
+    <div class="task" id="task-r">
+      <div class="ti" style="background: var(--yellow-soft)">🗣️</div>
+      <div class="tt"><b>课文跟读</b><small>原创同主题短文 · 5 句</small></div>
+      <span class="pts">+15</span>
+      <button class="btn btn-g btn-sm go" data-nav="words" data-mode="read">去完成</button><span class="ok">✅</span>
+    </div>
+    <div class="task" id="task-s">
+      <div class="ti" style="background: var(--blue-soft)">💬</div>
+      <div class="tt"><b>情景对话 · 在快餐店</b><small>场景中开口练英语</small></div>
+      <span class="pts">+25</span>
+      <button class="btn btn-b btn-sm go" data-nav="scen">去完成</button><span class="ok">✅</span>
+    </div>
+    <div class="task" id="task-q">
+      <div class="ti" style="background: var(--purple-soft)">📝</div>
+      <div class="tt"><b>单元小测</b><small>3 道题,检验今天的学习</small></div>
+      <span class="pts">+20</span>
+      <button class="btn btn-p btn-sm go" id="btn-quiz">去完成</button><span class="ok">✅</span>
+    </div>
+    <p class="hint" style="margin-top: 10px;">※ 复习任务由间隔重复(SRS)自动排入,正式版按遗忘曲线滚动出现。</p>
+  </div>
+
+  <!-- ══ 学单词 ══ -->
+  <div class="screen" id="scr-words">
+    <div class="modes">
+      <button class="mode on" data-m="learn">📖 认单词</button>
+      <button class="mode" data-m="spell">⌨️ 拼写挑战</button>
+      <button class="mode" data-m="read">🗣️ 课文跟读</button>
+    </div>
+
+    <div id="m-learn">
+      <div class="card wordcard">
+        <div class="w en" id="w-word">grade</div>
+        <div class="ipa en" id="w-ipa">/ɡreɪd/</div>
+        <button class="speak" id="w-speak">🔊 听发音</button>
+        <div class="meaning hide" id="w-meaning">
+          <div class="m" id="w-m">n. 年级</div>
+          <div class="ex" id="w-ex">I am in Grade Seven.</div>
+        </div>
+        <div class="wc-btns" id="w-btns">
+          <button class="btn btn-o" id="w-show">先想一想,看释义</button>
+        </div>
+        <div class="wc-btns" id="w-judge" style="display: none;">
+          <button class="btn btn-o" id="w-no">🤔 还不熟</button>
+          <button class="btn btn-g" id="w-yes">😄 认识啦</button>
+        </div>
+        <div class="dots" id="w-dots"></div>
+      </div>
+      <p class="hint">「还不熟」的词会重新排队,直到全部认识;正式版由 FSRS 算法安排后续复习。</p>
+    </div>
+
+    <div id="m-spell" style="display: none;">
+      <div class="card wordcard">
+        <div class="hint" style="margin-bottom: 6px;">听发音 + 看中文,拼出单词</div>
+        <div class="m" id="sp-m" style="font-size: 19px; font-weight: 800;">n. 同班同学</div>
+        <button class="speak" id="sp-speak" style="margin-top: 10px;">🔊 再听一遍</button>
+        <div class="spellrow">
+          <input id="sp-input" placeholder="type here…" autocomplete="off" autocapitalize="off" spellcheck="false">
+          <button class="btn btn-g" id="sp-check">检查</button>
+        </div>
+        <div class="feedback" id="sp-fb"></div>
+        <div class="dots" id="sp-dots"></div>
+      </div>
+    </div>
+
+    <div id="m-read" style="display: none;">
+      <div class="card">
+        <h3>🗣️ 课文跟读 <span class="hint" id="rd-prog">0/5</span></h3>
+        <p class="hint" style="margin: 4px 0 8px;">原创同主题短文(教材原文需版权授权后接入)。点 🔊 听,点「跟读」朗读——正式版有录音评分。</p>
+        <div id="rd-list"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ 情景岛 ══ -->
+  <div class="screen" id="scr-scen">
+    <div id="scen-list">
+      <div class="scen">
+        <div class="si">🍔</div>
+        <div><b>在快餐店 · Ordering Food</b><small>学会礼貌地点餐</small></div>
+        <button class="btn btn-b btn-sm" id="scen-start" style="margin-left: auto;">开始</button>
+      </div>
+      <div class="scen"><div class="si">🗺️</div><div><b>问路 · Asking the Way</b><small>完成上一场景解锁</small></div><span class="lock">🔒</span></div>
+      <div class="scen"><div class="si">👋</div><div><b>交新朋友 · Making Friends</b><small>完成上一场景解锁</small></div><span class="lock">🔒</span></div>
+      <div class="scen"><div class="si">🛍️</div><div><b>买东西 · Shopping</b><small>完成上一场景解锁</small></div><span class="lock">🔒</span></div>
+      <p class="hint" style="margin-top: 10px;">正式版:场景与单元同步,并接入 AI 自由对话与语音评测——先选句,再开口。</p>
+    </div>
+    <div id="scen-play" style="display: none;">
+      <div class="card">
+        <h3>🍔 在快餐店 <span class="hint">和店员 Momo 对话</span></h3>
+        <div class="chat" id="chat"></div>
+        <div class="choices" id="choices"></div>
+        <div class="tip" id="scen-tip"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ 宠物屋 ══ -->
+  <div class="screen" id="scr-pet">
+    <div class="petstage" id="petstage" style="position: relative;">
+      <div class="pet" id="petbody">
+        <svg viewBox="0 0 120 110" aria-label="宠物团团">
+          <ellipse cx="60" cy="66" rx="42" ry="38" fill="#7ED6AE"/>
+          <ellipse cx="60" cy="78" rx="26" ry="20" fill="#A8E6C9"/>
+          <path d="M30 38 Q26 12 44 24 Z" fill="#7ED6AE"/>
+          <path d="M90 38 Q94 12 76 24 Z" fill="#7ED6AE"/>
+          <g class="blink">
+            <circle cx="46" cy="58" r="5.5" fill="#2E3A33"/>
+            <circle cx="74" cy="58" r="5.5" fill="#2E3A33"/>
+            <circle cx="48" cy="56" r="1.8" fill="#fff"/>
+            <circle cx="76" cy="56" r="1.8" fill="#fff"/>
+          </g>
+          <ellipse cx="38" cy="68" rx="5" ry="3" fill="#FFB1A0" opacity="0.75"/>
+          <ellipse cx="82" cy="68" rx="5" ry="3" fill="#FFB1A0" opacity="0.75"/>
+          <path d="M54 70 Q60 76 66 70" stroke="#2E3A33" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <div class="petname">团团 <span class="lv en" id="pet-lv">Lv.3</span></div>
+      <div class="expbar"><i id="pet-exp" style="width: 40%;"></i></div>
+      <div class="hint"><span id="pet-expt">40/100</span> 经验 · 喂食升级,解锁新装扮</div>
+      <div class="petacts">
+        <button class="btn btn-g btn-sm" id="feed-c">🍚 喂普通粮</button>
+        <button class="btn btn-b btn-sm" id="feed-f">🍣 喂风味粮</button>
+        <button class="btn btn-p btn-sm" id="feed-d">🍱 喂豪华粮</button>
+      </div>
+      <div class="inv" id="inv"></div>
+    </div>
+
+    <div class="card boxmachine">
+      <h3 style="justify-content: center;">🎁 宠物粮盲盒</h3>
+      <div class="boxvis" id="boxvis">📦</div><br>
+      <button class="btn btn-c" id="draw">抽一次 · 🪙 50</button>
+      <div class="rates">概率公示:普通粮 60% · 风味粮 25% · 豪华粮 10% · 稀有玩具 5%</div>
+      <div class="pity" id="pity">10 抽内必出豪华及以上(已抽 0 次)</div>
+    </div>
+
+    <div class="card">
+      <h3>🐾 宠物好友 <span class="hint">同班同学的宠物来串门啦</span></h3>
+      <div class="friends">
+        <div class="friend"><div class="fp">🐰</div><b>布丁</b><small>小美的宠物</small><button class="btn btn-o btn-sm gift">🐟 送小鱼干</button></div>
+        <div class="friend"><div class="fp">🐱</div><b>闪电</b><small>阿哲的宠物</small><button class="btn btn-o btn-sm gift">🐟 送小鱼干</button></div>
+        <div class="friend"><div class="fp">🐸</div><b>泡泡</b><small>天天的宠物</small><button class="btn btn-o btn-sm gift">🐟 送小鱼干</button></div>
+      </div>
+      <p class="hint" style="margin-top: 10px;">※ 好友互动仅限同班同学、仅轻互动(送礼/点赞),默认关闭,需家长或老师开启。</p>
+    </div>
+  </div>
+
+  <!-- ══ 动画片 ══ -->
+  <div class="screen" id="scr-anime">
+    <div class="gate" id="gate"></div>
+    <div class="epis" id="epis"></div>
+    <p class="hint" style="margin-top: 12px;">※ 动画内容为占位卡片。正式版接入取得授权的全英文动画(小猪佩奇等需版权方/持牌平台合作),支持英文字幕开关,看完附 1 道趣味理解题。</p>
+  </div>
+</div>
+
+<!-- 底部导航 -->
+<nav class="tabbar"><div class="in">
+  <button class="tab on" data-nav="home"><span class="ic">🗓️</span>今日</button>
+  <button class="tab" data-nav="words"><span class="ic">📖</span>单词</button>
+  <button class="tab" data-nav="scen"><span class="ic">💬</span>情景</button>
+  <button class="tab" data-nav="pet"><span class="ic">🐾</span>宠物</button>
+  <button class="tab" data-nav="anime"><span class="ic">📺</span>动画</button>
+</div></nav>
+
+<!-- 家长中心 -->
+<div class="veil" id="veil-parent">
+  <div class="sheet">
+    <h3>⚙️ 家长中心 <span class="hint">(正式版需家长 PIN 进入)</span></h3>
+    <div class="setrow">
+      <div class="st"><b>动画片区总开关</b><small>关闭后孩子任何时候都看不到动画区内容</small></div>
+      <button class="switch on" id="sw-anime" role="switch" aria-checked="true" aria-label="动画片区总开关"></button>
+    </div>
+    <div class="setrow">
+      <div class="st"><b>每日观看上限</b><small>开放日内的时长限制</small></div>
+      <select id="sel-limit" style="border: 1.5px solid var(--line); background: var(--sunken); color: var(--ink); border-radius: 10px; padding: 7px 10px; font-size: 13.5px;">
+        <option>20 分钟</option><option selected>30 分钟</option><option>40 分钟</option>
+      </select>
+    </div>
+    <div class="setrow">
+      <div class="st"><b>演示:模拟「学期内周三」</b><small>体验非开放日的锁定状态(仅原型演示用)</small></div>
+      <button class="switch" id="sw-sim" role="switch" aria-checked="false" aria-label="模拟学期内周三"></button>
+    </div>
+    <div class="setrow" style="border-bottom: none;">
+      <div class="st"><b>学习周报</b><small>每周日推送:学了什么、薄弱点在哪(正式版)</small></div>
+      <span class="hint">示例</span>
+    </div>
+    <div style="display: flex; gap: 10px; margin-top: 16px;">
+      <button class="btn btn-o btn-sm" id="reset">清空演示数据</button>
+      <button class="btn btn-g btn-sm" id="close-parent" style="margin-left: auto;">完成</button>
+    </div>
+  </div>
+</div>
+
+<!-- 盲盒结果 -->
+<div class="veil" id="veil-box">
+  <div class="sheet">
+    <div class="reveal-item">
+      <div class="big" id="rv-emoji">🍚</div>
+      <h3 id="rv-name" style="justify-content: center; text-align: center;">普通粮 ×1</h3>
+      <span class="rar" id="rv-rar">普通</span>
+      <p class="hint" id="rv-note" style="margin-top: 8px;">已放入背包,快去喂团团吧!</p>
+      <div style="margin-top: 14px;"><button class="btn btn-p" id="close-box">收下啦</button></div>
+    </div>
+  </div>
+</div>
+
+<!-- 单元小测 -->
+<div class="veil" id="veil-quiz">
+  <div class="sheet">
+    <h3>📝 单元小测 <span class="hint" id="qz-prog">1/3</span></h3>
+    <p id="qz-q" style="font-size: 15px; font-weight: 700; margin-bottom: 12px;"></p>
+    <div class="choices" id="qz-choices"></div>
+    <div class="tip" id="qz-tip"></div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+(function () {
+  "use strict";
+
+  /* ── 数据(演示用原创内容) ─────────────────────── */
+  var UNITS = {
+    7: { zh: "新学期,认识我!", en: "This is me!" },
+    8: { zh: "我的好朋友", en: "Friends" },
+    9: { zh: "认识你自己", en: "Know yourself" }
+  };
+  var WORDS = {
+    7: [
+      { w: "grade", p: "/ɡreɪd/", m: "n. 年级", ex: "I am in Grade Seven." },
+      { w: "classmate", p: "/ˈklɑːsmeɪt/", m: "n. 同班同学", ex: "Amy is my classmate and my best friend." },
+      { w: "hobby", p: "/ˈhɒbi/", m: "n. 爱好", ex: "Reading is my favourite hobby." },
+      { w: "polite", p: "/pəˈlaɪt/", m: "adj. 有礼貌的", ex: "He is polite to everyone." },
+      { w: "helpful", p: "/ˈhelpfl/", m: "adj. 乐于助人的", ex: "She is helpful and often helps me with my homework." },
+      { w: "glasses", p: "/ˈɡlɑːsɪz/", m: "n. 眼镜", ex: "Simon wears glasses." },
+      { w: "club", p: "/klʌb/", m: "n. 社团;俱乐部", ex: "I want to join the Reading Club." },
+      { w: "born", p: "/bɔːn/", m: "v. 出生", ex: "I was born in Nanjing." }
+    ],
+    8: [
+      { w: "honest", p: "/ˈɒnɪst/", m: "adj. 诚实的", ex: "An honest friend never tells lies." },
+      { w: "secret", p: "/ˈsiːkrət/", m: "n. 秘密", ex: "I can share my secrets with her." },
+      { w: "generous", p: "/ˈdʒenərəs/", m: "adj. 慷慨的", ex: "He is generous and ready to share things." },
+      { w: "humorous", p: "/ˈhjuːmərəs/", m: "adj. 幽默的", ex: "Mr Wu is humorous and makes us laugh." },
+      { w: "willing", p: "/ˈwɪlɪŋ/", m: "adj. 乐意的", ex: "She is always willing to help others." },
+      { w: "joy", p: "/dʒɔɪ/", m: "n. 快乐", ex: "Her smile brings me joy." },
+      { w: "true", p: "/truː/", m: "adj. 真正的", ex: "A true friend is always there for you." },
+      { w: "special", p: "/ˈspeʃl/", m: "adj. 特别的", ex: "You are special to me." }
+    ],
+    9: [
+      { w: "creative", p: "/kriˈeɪtɪv/", m: "adj. 有创造力的", ex: "Wu Wei is a creative artist." },
+      { w: "energetic", p: "/ˌenəˈdʒetɪk/", m: "adj. 精力充沛的", ex: "She is energetic and loves sports." },
+      { w: "modest", p: "/ˈmɒdɪst/", m: "adj. 谦虚的", ex: "He is modest about his success." },
+      { w: "organized", p: "/ˈɔːɡənaɪzd/", m: "adj. 有条理的", ex: "An organized person plans everything well." },
+      { w: "attention", p: "/əˈtenʃn/", m: "n. 注意", ex: "Please pay attention to the details." },
+      { w: "personality", p: "/ˌpɜːsəˈnæləti/", m: "n. 性格", ex: "Everyone has a different personality." },
+      { w: "pride", p: "/praɪd/", m: "n. 自豪", ex: "She takes pride in her work." },
+      { w: "general", p: "/ˈdʒenrəl/", m: "adj. 总的;大体的", ex: "In general, I agree with you." }
+    ]
+  };
+  var PASSAGES = {
+    7: [
+      "Hello! My name is Li Lei.",
+      "I am twelve years old, and I am in Grade Seven at Sunshine Middle School.",
+      "I like reading and playing football.",
+      "My classmates are polite and helpful, and we often play together after class.",
+      "I love my new school!"
+    ],
+    8: [
+      "My best friend is Kate.",
+      "She is honest and generous, and she always shares her joy with me.",
+      "When I am sad, she tells humorous stories to make me laugh.",
+      "A true friend is like sunshine.",
+      "I am lucky to have her."
+    ],
+    9: [
+      "What kind of person are you?",
+      "I am creative and energetic.",
+      "I love painting and playing basketball.",
+      "My teacher says I should be more organized, so I plan my time carefully now.",
+      "Knowing yourself is the first step to growing up."
+    ]
+  };
+  var QUIZ = {
+    7: [
+      { q: "My best friend and I are in the same class. We are ___.", c: ["classmates", "hobbies", "clubs"], a: 0 },
+      { q: "Lily always says “please” and “thank you”. She is very ___.", c: ["tall", "polite", "hungry"], a: 1 },
+      { q: "I can’t see the words clearly. I need my ___.", c: ["grade", "club", "glasses"], a: 2 }
+    ],
+    8: [
+      { q: "He never tells lies. He is ___.", c: ["honest", "humorous", "willing"], a: 0 },
+      { q: "She often makes us laugh. She is ___.", c: ["secret", "humorous", "true"], a: 1 },
+      { q: "Don’t tell anyone — it’s a ___.", c: ["joy", "friend", "secret"], a: 2 }
+    ],
+    9: [
+      { q: "She always has new ideas. She is ___.", c: ["creative", "modest", "general"], a: 0 },
+      { q: "He never shows off. He is ___.", c: ["energetic", "modest", "organized"], a: 1 },
+      { q: "Please pay ___ to the teacher.", c: ["pride", "personality", "attention"], a: 2 }
+    ]
+  };
+  var SCEN = [
+    { npc: "Good afternoon! Welcome to Happy Burger. What would you like?",
+      c: ["I’d like a hamburger and a glass of orange juice, please.", "Give me hamburger.", "I like hamburgers very much."],
+      a: 0, tips: ["", "有点不礼貌哦,试试用 I’d like…, please. 的说法", "店员问的是「要点什么」,不是问你喜欢什么哦"] },
+    { npc: "Sure. For here or to go?",
+      c: ["I go to school.", "For here, please.", "Yes."],
+      a: 1, tips: ["For here or to go 是问「堂食还是带走」哦", "", "这是个选择问句,要选一边回答哦"] },
+    { npc: "Anything else?",
+      c: ["No, thanks. How much is it?", "You’re welcome.", "I am else."],
+      a: 0, tips: ["", "You’re welcome 是回应别人道谢时用的哦", "else 不能这样用哦,试试别的回答"] },
+    { npc: "That’s 25 yuan, please.",
+      c: ["Here are you.", "Goodbye!", "Here you are."],
+      a: 2, tips: ["顺序不对哦,递东西要说 Here you are.", "先付钱再说再见哦", ""] }
+  ];
+  var LOOT = [
+    { k: "c", name: "普通粮", emoji: "🍚", rar: "普通", col: "#9AA79E", w: 60 },
+    { k: "f", name: "风味粮", emoji: "🍣", rar: "风味", col: "#4C9EEB", w: 25 },
+    { k: "d", name: "豪华粮", emoji: "🍱", rar: "豪华", col: "#9B6DFF", w: 10 },
+    { k: "t", name: "稀有玩具·小飞盘", emoji: "🥏", rar: "稀有", col: "#FFB937", w: 5 }
+  ];
+  // 假期区间(每年按江苏校历配置;演示用):暑假 7.1–8.31,寒假 1.20–2.16
+  var HOLIDAYS = [{ from: [7, 1], to: [8, 31], name: "暑假" }, { from: [1, 20], to: [2, 16], name: "寒假" }];
+
+  /* ── 状态 ─────────────────────────────────────── */
+  var DEF = { pts: 120, streak: 5, grade: 7, tasks: {}, inv: { c: 2, f: 0, d: 0, t: 0 },
+              petLv: 3, petExp: 40, pity: 0, anime: true, sim: false };
+  var S;
+  function load() {
+    try { S = Object.assign({}, DEF, JSON.parse(localStorage.getItem("epi-demo") || "{}")); }
+    catch (e) { S = Object.assign({}, DEF); }
+    S.inv = Object.assign({}, DEF.inv, S.inv); S.tasks = S.tasks || {};
+  }
+  function save() { try { localStorage.setItem("epi-demo", JSON.stringify(S)); } catch (e) {} }
+  load();
+
+  var $ = function (id) { return document.getElementById(id); };
+  function toast(msg) {
+    var t = $("toast"); t.textContent = msg; t.classList.add("on");
+    clearTimeout(toast._t); toast._t = setTimeout(function () { t.classList.remove("on"); }, 1800);
+  }
+  function say(text) {
+    try {
+      var u = new SpeechSynthesisUtterance(text);
+      u.lang = "en-US"; u.rate = 0.9;
+      speechSynthesis.cancel(); speechSynthesis.speak(u);
+    } catch (e) { toast("当前浏览器不支持语音合成"); }
+  }
+  function addPts(n, why) { S.pts += n; save(); renderHud(); toast("🪙 +" + n + " " + (why || "")); }
+  function doneTask(k, pts, why) {
+    if (S.tasks[S.grade + "-" + k]) { toast("今天已完成过啦"); renderTasks(); return; }
+    S.tasks[S.grade + "-" + k] = 1; addPts(pts, why); renderTasks();
+  }
+
+  /* ── HUD / 年级 / 导航 ────────────────────────── */
+  function renderHud() { $("hud-pts").textContent = S.pts; $("hud-streak").textContent = S.streak; $("streak2").textContent = S.streak; }
+  function renderGrade() {
+    document.querySelectorAll(".gpill").forEach(function (b) { b.classList.toggle("on", +b.dataset.g === S.grade); });
+    $("ub-zh").textContent = UNITS[S.grade].zh; $("ub-en").textContent = UNITS[S.grade].en;
+  }
+  document.querySelectorAll(".gpill").forEach(function (b) {
+    b.addEventListener("click", function () {
+      S.grade = +b.dataset.g; save(); renderGrade(); renderTasks(); resetLearn(); resetSpell(); renderRead(); toast("已切换到" + b.textContent);
+    });
+  });
+  function nav(name) {
+    document.querySelectorAll(".screen").forEach(function (s) { s.classList.remove("on"); });
+    $("scr-" + name).classList.add("on");
+    document.querySelectorAll(".tab").forEach(function (t) { t.classList.toggle("on", t.dataset.nav === name); });
+    if (name === "anime") renderGate();
+    window.scrollTo({ top: 0 });
+  }
+  document.querySelectorAll("[data-nav]").forEach(function (b) {
+    b.addEventListener("click", function () {
+      nav(b.dataset.nav);
+      if (b.dataset.mode) setMode(b.dataset.mode);
+    });
+  });
+
+  /* ── 任务 ─────────────────────────────────────── */
+  function renderTasks() {
+    [["w", "task-w"], ["r", "task-r"], ["s", "task-s"], ["q", "task-q"]].forEach(function (p) {
+      $(p[1]).classList.toggle("done", !!S.tasks[S.grade + "-" + p[0]]);
+    });
+  }
+
+  /* ── 认单词 ───────────────────────────────────── */
+  var queue = [], wi = 0, learned = 0;
+  function resetLearn() {
+    queue = WORDS[S.grade].slice(); wi = 0; learned = 0; showWord();
+  }
+  function showWord() {
+    var total = WORDS[S.grade].length;
+    if (learned >= total) {
+      $("w-word").textContent = "🎉"; $("w-ipa").textContent = "全部完成!";
+      $("w-m").textContent = "8 个单词都认识啦"; $("w-ex").textContent = "明天 SRS 会安排复习哦";
+      $("w-meaning").classList.remove("hide");
+      $("w-btns").style.display = "none"; $("w-judge").style.display = "none";
+      doneTask("w", 20, "学完 8 个新单词"); renderDots(); return;
+    }
+    var it = queue[wi % queue.length];
+    $("w-word").textContent = it.w; $("w-ipa").textContent = it.p;
+    $("w-m").textContent = it.m; $("w-ex").textContent = it.ex;
+    $("w-meaning").classList.add("hide");
+    $("w-btns").style.display = "flex"; $("w-judge").style.display = "none";
+    renderDots();
+  }
+  function renderDots() {
+    var total = WORDS[S.grade].length, html = "";
+    for (var i = 0; i < total; i++) html += "<i class='" + (i < learned ? "done" : (i === learned ? "cur" : "")) + "'></i>";
+    $("w-dots").innerHTML = html;
+  }
+  $("w-show").addEventListener("click", function () {
+    $("w-meaning").classList.remove("hide");
+    $("w-btns").style.display = "none"; $("w-judge").style.display = "flex";
+  });
+  $("w-speak").addEventListener("click", function () { say($("w-word").textContent); });
+  $("w-yes").addEventListener("click", function () {
+    queue.splice(wi % queue.length, 1); learned++; showWord();
+  });
+  $("w-no").addEventListener("click", function () {
+    var it = queue.splice(wi % queue.length, 1)[0]; queue.push(it);
+    toast("没关系,待会再见到它"); showWord();
+  });
+
+  /* ── 拼写挑战 ─────────────────────────────────── */
+  var spellSet = [], si = 0;
+  function resetSpell() {
+    spellSet = WORDS[S.grade].slice(0, 3); si = 0; showSpell();
+  }
+  function showSpell() {
+    if (si >= spellSet.length) {
+      $("sp-m").textContent = "🎉 拼写挑战完成!"; $("sp-fb").textContent = ""; $("sp-input").value = "";
+      addPts(5, "拼写加成"); renderSpellDots(); return;
+    }
+    $("sp-m").textContent = spellSet[si].m; $("sp-input").value = ""; $("sp-fb").textContent = ""; $("sp-fb").className = "feedback";
+    renderSpellDots(); say(spellSet[si].w);
+  }
+  function renderSpellDots() {
+    var html = "";
+    for (var i = 0; i < spellSet.length; i++) html += "<i class='" + (i < si ? "done" : (i === si ? "cur" : "")) + "'></i>";
+    $("sp-dots").innerHTML = html;
+  }
+  $("sp-speak").addEventListener("click", function () { if (si < spellSet.length) say(spellSet[si].w); });
+  $("sp-check").addEventListener("click", checkSpell);
+  $("sp-input").addEventListener("keydown", function (e) { if (e.key === "Enter") checkSpell(); });
+  function checkSpell() {
+    if (si >= spellSet.length) return;
+    var v = $("sp-input").value.trim().toLowerCase();
+    if (v === spellSet[si].w) {
+      $("sp-fb").textContent = "✓ " + spellSet[si].w + " 拼对啦!"; $("sp-fb").className = "feedback good";
+      si++; setTimeout(showSpell, 700);
+    } else {
+      $("sp-fb").textContent = "再试一次,听听发音提示~"; $("sp-fb").className = "feedback bad";
+    }
+  }
+
+  /* ── 课文跟读 ─────────────────────────────────── */
+  var readDone = [];
+  function renderRead() {
+    readDone = PASSAGES[S.grade].map(function () { return false; });
+    drawRead();
+  }
+  function drawRead() {
+    var html = "";
+    PASSAGES[S.grade].forEach(function (s, i) {
+      html += "<div class='sent" + (readDone[i] ? " readed" : "") + "'><p>" + s + "</p>" +
+        "<button class='btn btn-o btn-sm rd-play' data-i='" + i + "'>🔊</button>" +
+        "<button class='btn btn-g btn-sm rd-done' data-i='" + i + "'>跟读✓</button></div>";
+    });
+    $("rd-list").innerHTML = html;
+    var n = readDone.filter(Boolean).length;
+    $("rd-prog").textContent = n + "/" + PASSAGES[S.grade].length;
+    if (n === PASSAGES[S.grade].length && !S.tasks[S.grade + "-r"]) doneTask("r", 15, "课文跟读完成");
+  }
+  $("rd-list").addEventListener("click", function (e) {
+    var b = e.target.closest("button"); if (!b) return;
+    var i = +b.dataset.i;
+    if (b.classList.contains("rd-play")) say(PASSAGES[S.grade][i]);
+    else { readDone[i] = true; say(PASSAGES[S.grade][i]); drawRead(); }
+  });
+
+  /* ── 单词模式切换 ─────────────────────────────── */
+  function setMode(m) {
+    document.querySelectorAll(".mode").forEach(function (b) { b.classList.toggle("on", b.dataset.m === m); });
+    $("m-learn").style.display = m === "learn" ? "" : "none";
+    $("m-spell").style.display = m === "spell" ? "" : "none";
+    $("m-read").style.display = m === "read" ? "" : "none";
+  }
+  document.querySelectorAll(".mode").forEach(function (b) {
+    b.addEventListener("click", function () { setMode(b.dataset.m); });
+  });
+
+  /* ── 情景对话 ─────────────────────────────────── */
+  var ci = 0, mistakes = 0;
+  $("scen-start").addEventListener("click", function () {
+    ci = 0; mistakes = 0;
+    $("scen-list").style.display = "none"; $("scen-play").style.display = "";
+    $("chat").innerHTML = ""; nextTurn();
+  });
+  function bubble(role, text, me) {
+    var d = document.createElement("div");
+    d.className = "bub " + (me ? "me" : "npc");
+    d.innerHTML = "<span class='role'>" + role + "</span>" + text +
+      (me ? "" : " <button class='sp2' aria-label='朗读'>🔊</button>");
+    if (!me) d.querySelector(".sp2").addEventListener("click", function () { say(text); });
+    $("chat").appendChild(d);
+  }
+  function nextTurn() {
+    $("scen-tip").textContent = "";
+    if (ci >= SCEN.length) {
+      bubble("店员 Momo", "Enjoy your meal! 🍔", false); say("Enjoy your meal!");
+      $("choices").innerHTML = "<div style='text-align:center;padding:6px 0;'>" +
+        "<b>🎉 场景完成!</b> <span class='hint'>口误 " + mistakes + " 次</span><br>" +
+        "<button class='btn btn-b btn-sm' id='scen-back' style='margin-top:10px;'>返回场景列表</button></div>";
+      $("scen-back").addEventListener("click", function () {
+        $("scen-list").style.display = ""; $("scen-play").style.display = "none";
+      });
+      doneTask("s", 25, "情景对话完成");
+      return;
+    }
+    var t = SCEN[ci];
+    bubble("店员 Momo", t.npc, false); say(t.npc);
+    var html = "";
+    t.c.forEach(function (c, i) { html += "<button class='choice' data-i='" + i + "'>" + c + "</button>"; });
+    $("choices").innerHTML = html;
+    $("choices").querySelectorAll(".choice").forEach(function (b) {
+      b.addEventListener("click", function () {
+        var i = +b.dataset.i, t2 = SCEN[ci];
+        if (i === t2.a) {
+          bubble("我", t2.c[i], true); say(t2.c[i]);
+          ci++; setTimeout(nextTurn, 750);
+        } else {
+          mistakes++; b.classList.add("bad");
+          $("scen-tip").textContent = "💡 " + t2.tips[i];
+        }
+      });
+    });
+  }
+
+  /* ── 宠物 ─────────────────────────────────────── */
+  var FOOD = { c: { exp: 10, emoji: "🍚" }, f: { exp: 18, emoji: "🍣" }, d: { exp: 35, emoji: "🍱" } };
+  function renderPet() {
+    $("pet-lv").textContent = "Lv." + S.petLv;
+    var need = 100;
+    $("pet-exp").style.width = Math.min(100, S.petExp / need * 100) + "%";
+    $("pet-expt").textContent = S.petExp + "/" + need;
+    $("inv").innerHTML =
+      "<span class='invitem'>🍚 普通粮 ×" + S.inv.c + "</span>" +
+      "<span class='invitem'>🍣 风味粮 ×" + S.inv.f + "</span>" +
+      "<span class='invitem'>🍱 豪华粮 ×" + S.inv.d + "</span>" +
+      "<span class='invitem'>🥏 玩具 ×" + S.inv.t + "</span>";
+  }
+  function feed(k) {
+    if (S.inv[k] <= 0) { toast("背包里没有这种粮啦,去抽盲盒吧"); return; }
+    S.inv[k]--; S.petExp += FOOD[k].exp;
+    if (S.petExp >= 100) { S.petExp -= 100; S.petLv++; toast("🎉 团团升到 Lv." + S.petLv + " 啦!"); }
+    save(); renderPet();
+    var p = $("petbody"); p.classList.remove("jump"); void p.offsetWidth; p.classList.add("jump");
+    heart($("petstage"), FOOD[k].emoji);
+  }
+  $("feed-c").addEventListener("click", function () { feed("c"); });
+  $("feed-f").addEventListener("click", function () { feed("f"); });
+  $("feed-d").addEventListener("click", function () { feed("d"); });
+  function heart(host, emoji) {
+    var h = document.createElement("span");
+    h.className = "heartfloat"; h.textContent = emoji || "❤️";
+    h.style.left = (40 + Math.floor(Math.random() * 20)) + "%"; h.style.top = "44%";
+    host.appendChild(h); setTimeout(function () { h.remove(); }, 900);
+  }
+  document.querySelectorAll(".gift").forEach(function (b) {
+    b.addEventListener("click", function () {
+      heart(b.closest(".friend"), "❤️"); toast("小鱼干送出去啦,好感 +1");
+    });
+  });
+
+  /* ── 盲盒(含 10 抽保底) ──────────────────────── */
+  function roll() {
+    // 保底:第 10 抽仍未出豪华及以上,则必出豪华
+    if (S.pity >= 9) return LOOT[2];
+    var r = Math.random() * 100, acc = 0;
+    for (var i = 0; i < LOOT.length; i++) { acc += LOOT[i].w; if (r < acc) return LOOT[i]; }
+    return LOOT[0];
+  }
+  $("draw").addEventListener("click", function () {
+    if (S.pts < 50) { toast("积分不够啦,先去完成今日任务吧!"); return; }
+    S.pts -= 50; renderHud();
+    var v = $("boxvis"); v.classList.remove("shake"); void v.offsetWidth; v.classList.add("shake");
+    $("draw").disabled = true;
+    setTimeout(function () {
+      var item = roll();
+      if (item.k === "d" || item.k === "t") S.pity = 0; else S.pity++;
+      S.inv[item.k]++; save(); renderPet(); renderPity();
+      $("rv-emoji").textContent = item.emoji;
+      $("rv-name").textContent = item.name + " ×1";
+      $("rv-rar").textContent = item.rar;
+      $("rv-rar").style.background = item.col; $("rv-rar").style.color = "#fff";
+      $("rv-note").textContent = item.k === "t" ? "稀有玩具!团团玩起来经验翻倍(演示)" : "已放入背包,快去喂团团吧!";
+      $("veil-box").classList.add("on");
+      $("draw").disabled = false;
+    }, 850);
+  });
+  function renderPity() { $("pity").textContent = "10 抽内必出豪华及以上(已累计 " + S.pity + " 次)"; }
+  $("close-box").addEventListener("click", function () { $("veil-box").classList.remove("on"); });
+
+  /* ── 单元小测 ─────────────────────────────────── */
+  var qi = 0, qWrong = 0;
+  $("btn-quiz").addEventListener("click", function () {
+    qi = 0; qWrong = 0; showQuiz(); $("veil-quiz").classList.add("on");
+  });
+  function showQuiz() {
+    var list = QUIZ[S.grade];
+    if (qi >= list.length) {
+      $("qz-q").textContent = "🎉 小测完成!答错 " + qWrong + " 次。";
+      $("qz-choices").innerHTML = "<button class='btn btn-p' id='qz-close'>领取奖励</button>";
+      $("qz-tip").textContent = "";
+      $("qz-close").addEventListener("click", function () {
+        $("veil-quiz").classList.remove("on"); doneTask("q", 20, "单元小测完成");
+      });
+      return;
+    }
+    var q = list[qi];
+    $("qz-prog").textContent = (qi + 1) + "/" + list.length;
+    $("qz-q").textContent = q.q; $("qz-tip").textContent = "";
+    var html = "";
+    q.c.forEach(function (c, i) { html += "<button class='choice' data-i='" + i + "'>" + c + "</button>"; });
+    $("qz-choices").innerHTML = html;
+    $("qz-choices").querySelectorAll(".choice").forEach(function (b) {
+      b.addEventListener("click", function () {
+        if (+b.dataset.i === q.a) { qi++; showQuiz(); }
+        else { qWrong++; b.classList.add("bad"); $("qz-tip").textContent = "💡 再想想,提示:看看今天学的单词表"; }
+      });
+    });
+  }
+  $("veil-quiz").addEventListener("click", function (e) { if (e.target === this) this.classList.remove("on"); });
+
+  /* ── 动画片门禁 ───────────────────────────────── */
+  function gateState() {
+    if (!S.anime) return { open: false, why: "家长已关闭动画片区", sub: "在家长中心可重新开启" };
+    var now = new Date();
+    if (S.sim) return { open: false, why: "动画区仅周末与寒暑假开放", sub: "演示模式:模拟学期内周三 · 周六 08:00 解锁" };
+    var day = now.getDay(), m = now.getMonth() + 1, d = now.getDate();
+    for (var i = 0; i < HOLIDAYS.length; i++) {
+      var h = HOLIDAYS[i], a = h.from[0] * 100 + h.from[1], b = h.to[0] * 100 + h.to[1], cur = m * 100 + d;
+      if (cur >= a && cur <= b) return { open: true, why: h.name + "开放中 🎉", sub: "今日剩余可看:" + $("sel-limit").value + "(演示)" };
+    }
+    if (day === 0 || day === 6) return { open: true, why: "周末开放中 🎉", sub: "今日剩余可看:" + $("sel-limit").value + "(演示)" };
+    var left = 6 - day;
+    return { open: false, why: "动画区仅周末与寒暑假开放", sub: "距离周六解锁还有 " + left + " 天,先去完成今日任务吧!" };
+  }
+  var EPIS = ["🐷", "🦖", "🚀", "🌈", "🐧", "🎪"];
+  function renderGate() {
+    var g = gateState();
+    $("gate").className = "gate " + (g.open ? "open" : "closed");
+    $("gate").innerHTML = (g.open ? "✅ " : "🔒 ") + "<div>" + g.why + "<small>" + g.sub + "</small></div>";
+    var html = "";
+    var grads = ["#FFB1A0,#FF6B4A", "#8ED8B0,#2EAF7D", "#9DC4F5,#4C9EEB", "#C9B2FF,#9B6DFF", "#FFD98A,#FFB937", "#F5A2C0,#E86A9A"];
+    EPIS.forEach(function (e, i) {
+      html += "<div class='epi'><div class='cover' style='background:linear-gradient(135deg," + grads[i] + ")'>" + e + "</div>" +
+        "<div class='nm'>全英文动画 · 第 " + (i + 1) + " 集<small>版权内容占位 · " + (4 + i) + " 分钟</small></div>" +
+        (g.open ? "" : "<div class='lockov'>🔒</div>") + "</div>";
+    });
+    $("epis").innerHTML = html;
+    if (g.open) {
+      $("epis").querySelectorAll(".epi").forEach(function (el) {
+        el.style.cursor = "pointer";
+        el.addEventListener("click", function () { toast("演示占位:正式版在此播放持牌动画内容"); });
+      });
+    }
+  }
+
+  /* ── 家长中心 ─────────────────────────────────── */
+  $("btn-parent").addEventListener("click", function () { $("veil-parent").classList.add("on"); });
+  $("close-parent").addEventListener("click", function () { $("veil-parent").classList.remove("on"); renderGate(); });
+  $("veil-parent").addEventListener("click", function (e) { if (e.target === this) { this.classList.remove("on"); renderGate(); } });
+  function bindSwitch(id, key) {
+    var el = $(id);
+    el.classList.toggle("on", !!S[key]);
+    el.setAttribute("aria-checked", !!S[key]);
+    el.addEventListener("click", function () {
+      S[key] = !S[key]; save();
+      el.classList.toggle("on", S[key]); el.setAttribute("aria-checked", S[key]);
+      renderGate();
+    });
+  }
+  bindSwitch("sw-anime", "anime");
+  bindSwitch("sw-sim", "sim");
+  $("sel-limit").addEventListener("change", renderGate);
+  $("reset").addEventListener("click", function () {
+    try { localStorage.removeItem("epi-demo"); } catch (e) {}
+    load(); renderAll(); $("veil-parent").classList.remove("on"); toast("演示数据已重置");
+  });
+
+  /* ── 启动 ─────────────────────────────────────── */
+  function renderAll() {
+    renderHud(); renderGrade(); renderTasks(); resetLearn(); resetSpell(); renderRead(); renderPet(); renderPity(); renderGate();
+    bindStates();
+  }
+  function bindStates() {
+    $("sw-anime").classList.toggle("on", !!S.anime);
+    $("sw-sim").classList.toggle("on", !!S.sim);
+  }
+  renderAll();
+  nav("home");
+})();
+</script>
