@@ -1,0 +1,487 @@
+<title>英语听说方案书</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700;900&family=Noto+Serif+SC:wght@700;900&family=JetBrains+Mono:wght@600;700&display=swap">
+
+<!--
+  ══════════════════════════════════════════════════════════════
+  甲方汇报页 · 初中英语听说学习平台 定制方案(V1)
+  · 面向:合作学校校长/教研组汇报
+  · 「学校名」为占位;商务报价单独出,本页不含内部成本数据
+  · 依据:projects/english-learning/02-battle-plan.md 与 research/
+  ══════════════════════════════════════════════════════════════
+-->
+
+<style>
+  :root {
+    --bg: #FAF8F1;
+    --surface: #FFFFFF;
+    --sunken: #F2EEE1;
+    --ink: #1E2A3A;
+    --muted: #647080;
+    --line: #E7E1D1;
+    --blue: #2E5BE3;
+    --blue-soft: rgba(46, 91, 227, 0.10);
+    --gold: #A9873C;
+    --gold-fill: #D4B872;
+    --gold-soft: rgba(212, 184, 114, 0.16);
+    --green: #2FA878;
+    --green-soft: rgba(47, 168, 120, 0.12);
+    --coral: #E8532F;
+    --coral-soft: rgba(232, 83, 47, 0.10);
+    --shadow: 0 20px 44px -20px rgba(30, 42, 58, 0.25);
+    --ring: rgba(46, 91, 227, 0.5);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #131926;
+      --surface: #1C2333;
+      --sunken: #171E2C;
+      --ink: #ECEEF2;
+      --muted: #96A0B0;
+      --line: #2C3547;
+      --blue: #7C99F4;
+      --blue-soft: rgba(124, 153, 244, 0.14);
+      --gold: #D4B872;
+      --gold-fill: #D4B872;
+      --gold-soft: rgba(212, 184, 114, 0.12);
+      --green: #3EC08D;
+      --green-soft: rgba(62, 192, 141, 0.14);
+      --coral: #F4694F;
+      --coral-soft: rgba(244, 105, 79, 0.14);
+      --shadow: 0 20px 44px -22px rgba(0, 0, 0, 0.62);
+      --ring: rgba(124, 153, 244, 0.55);
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #131926;
+    --surface: #1C2333;
+    --sunken: #171E2C;
+    --ink: #ECEEF2;
+    --muted: #96A0B0;
+    --line: #2C3547;
+    --blue: #7C99F4;
+    --blue-soft: rgba(124, 153, 244, 0.14);
+    --gold: #D4B872;
+    --gold-fill: #D4B872;
+    --gold-soft: rgba(212, 184, 114, 0.12);
+    --green: #3EC08D;
+    --green-soft: rgba(62, 192, 141, 0.14);
+    --coral: #F4694F;
+    --coral-soft: rgba(244, 105, 79, 0.14);
+    --shadow: 0 20px 44px -22px rgba(0, 0, 0, 0.62);
+    --ring: rgba(124, 153, 244, 0.55);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg); color: var(--ink);
+    font-family: "Noto Sans SC", "PingFang SC", "Microsoft YaHei", sans-serif;
+    font-size: 15.5px; line-height: 1.85; -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+  a { color: inherit; }
+  :is(a, button):focus-visible { outline: 2px solid var(--ring); outline-offset: 3px; }
+  h1, h2, h3 { font-weight: 900; line-height: 1.35; text-wrap: balance; }
+  .wrap { max-width: 980px; margin: 0 auto; padding: 0 26px; }
+  section { padding: 64px 0; }
+  section + section { border-top: 1px solid var(--line); }
+
+  .eyebrow {
+    display: inline-flex; align-items: center; gap: 9px;
+    font-size: 12.5px; font-weight: 700; letter-spacing: 0.26em; color: var(--muted);
+    margin-bottom: 14px;
+  }
+  .eyebrow::before { content: ""; width: 9px; height: 9px; border-radius: 50%; background: var(--gold-fill); }
+  .sec-title { font-size: clamp(24px, 3.4vw, 32px); margin-bottom: 12px; }
+  .sec-lead { color: var(--muted); max-width: 40em; }
+  .hint { font-size: 12.5px; color: var(--muted); }
+
+  /* ── 封面 ── */
+  .cover { padding: 80px 0 66px; }
+  .cover .doc { font-size: 12.5px; letter-spacing: 0.3em; color: var(--muted); font-weight: 700; margin-bottom: 20px; }
+  .cover h1 { font-size: clamp(32px, 5vw, 46px); margin-bottom: 18px; }
+  .cover h1 .u { background: linear-gradient(transparent 70%, var(--gold-fill) 70%, var(--gold-fill) 94%, transparent 94%); }
+  .cover .sub { color: var(--muted); font-size: 17px; max-width: 34em; }
+  .claims { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 36px; }
+  .claim { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 20px 22px; box-shadow: 0 2px 0 var(--line); }
+  .claim b { display: block; font-size: 16px; margin-bottom: 5px; }
+  .claim span { font-size: 13px; color: var(--muted); }
+  .claim i { font-style: normal; font-size: 20px; display: block; margin-bottom: 8px; }
+
+  /* ── 表格 ── */
+  .tablewrap { overflow-x: auto; border: 1px solid var(--line); border-radius: 14px; background: var(--surface); }
+  table { border-collapse: collapse; width: 100%; min-width: 640px; font-size: 13.5px; }
+  th, td { padding: 12px 16px; text-align: left; border-bottom: 1px solid var(--line); vertical-align: top; }
+  th { font-size: 12px; letter-spacing: 0.08em; color: var(--muted); background: var(--sunken); font-weight: 700; white-space: nowrap; }
+  tr:last-child td { border-bottom: none; }
+  td.ok { color: var(--green); font-weight: 700; white-space: nowrap; }
+  td.no { color: var(--muted); white-space: nowrap; }
+
+  /* ── 模考结构条 ── */
+  .exam { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; margin: 26px 0 18px; }
+  .ex {
+    background: var(--surface); border: 1px solid var(--line); border-radius: 14px;
+    padding: 16px 15px 14px; position: relative;
+  }
+  .ex::before { content: ""; position: absolute; left: 0; top: 14px; bottom: 14px; width: 4px; border-radius: 4px; background: var(--blue); }
+  .ex.oral::before { background: var(--coral); }
+  .ex .pt { font-family: "JetBrains Mono", monospace; font-weight: 700; font-size: 20px; }
+  .ex .pt em { font-style: normal; font-size: 12px; color: var(--muted); }
+  .ex b { display: block; font-size: 13.5px; margin-top: 2px; }
+  .ex small { color: var(--muted); font-size: 11.5px; line-height: 1.5; display: block; margin-top: 3px; }
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+  .chip {
+    font-size: 12.5px; font-weight: 500; color: var(--muted);
+    border: 1px solid var(--line); background: var(--surface); border-radius: 999px; padding: 5px 14px;
+  }
+  .chip.hot { border-color: var(--gold-fill); color: var(--gold); background: var(--gold-soft); font-weight: 700; }
+
+  /* ── 架构 ── */
+  .stack { display: grid; gap: 12px; margin-top: 26px; }
+  .layer {
+    display: grid; grid-template-columns: 150px 1fr; gap: 20px; align-items: center;
+    background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 18px 22px;
+  }
+  .layer .lv { font-size: 12px; letter-spacing: 0.12em; color: var(--muted); font-weight: 700; border-right: 1px solid var(--line); padding-right: 18px; }
+  .layer .lv b { display: block; font-size: 15px; color: var(--ink); letter-spacing: 0.02em; margin-top: 2px; }
+  .layer p { font-size: 13.5px; color: var(--muted); }
+
+  /* ── 承诺卡 ── */
+  .cards { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-top: 26px; }
+  .card { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 18px 20px; }
+  .card b { display: block; font-size: 14.5px; margin-bottom: 5px; }
+  .card p { font-size: 12.5px; color: var(--muted); }
+  .card .no2 { font-family: "JetBrains Mono", monospace; color: var(--gold); font-size: 12px; font-weight: 700; display: block; margin-bottom: 8px; }
+
+  /* ── 视觉方向 style tiles ── */
+  .styles { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; margin-top: 30px; }
+  .style { border: 1px solid var(--line); border-radius: 18px; overflow: hidden; background: var(--surface); box-shadow: 0 2px 0 var(--line); }
+  .style .art { height: 240px; position: relative; overflow: hidden; }
+  .style .meta { padding: 16px 18px 18px; }
+  .style .meta h3 { font-size: 16px; margin-bottom: 6px; }
+  .style .meta p { font-size: 12.5px; color: var(--muted); }
+  .style .aud { display: grid; gap: 4px; margin-top: 10px; font-size: 12px; }
+  .style .aud span { display: flex; gap: 7px; }
+  .style .aud i { font-style: normal; flex: none; font-weight: 700; }
+  .style .aud .s1 { color: var(--blue); }
+  .style .aud .s2 { color: var(--green); }
+
+  /* 风格小样内部为固定配色(是作品样张,不随主题) */
+  /* A 新中式×二次元 */
+  .artA { background: #F6F1E4; color: #22303A; font-family: "Noto Serif SC", serif; }
+  .artA .vtext { position: absolute; right: 14px; top: 14px; writing-mode: vertical-rl; font-size: 12px; letter-spacing: 0.4em; color: #B5432A; font-weight: 700; }
+  .artA .ink { position: absolute; left: -30px; bottom: -46px; width: 190px; height: 190px; border-radius: 50%; background: radial-gradient(circle at 40% 40%, rgba(34, 48, 58, 0.16), transparent 65%); }
+  .artA .mtn { position: absolute; left: 0; right: 0; bottom: 0; height: 74px; }
+  .artA .cardx {
+    position: absolute; left: 18px; top: 22px; width: 150px;
+    background: #FFFDF6; border: 1px solid #E3D9BD; border-radius: 6px; padding: 14px 14px 12px;
+    box-shadow: 0 10px 24px -12px rgba(34, 48, 58, 0.35);
+  }
+  .artA .cardx .w { font-size: 21px; font-weight: 900; }
+  .artA .cardx .p { font-size: 10.5px; color: #8A8267; font-family: "Noto Sans SC", sans-serif; }
+  .artA .cardx .m { font-size: 12px; margin-top: 6px; }
+  .artA .seal { position: absolute; right: 12px; bottom: 10px; width: 26px; height: 26px; background: #B5432A; color: #FFF6E8; font-size: 10px; line-height: 1.1; display: grid; place-items: center; border-radius: 3px; font-weight: 700; }
+  .artA .btnx { position: absolute; left: 18px; bottom: 18px; background: #22303A; color: #F6F1E4; font-size: 11.5px; padding: 7px 16px; border-radius: 3px; letter-spacing: 0.14em; }
+  .artA .goldline { position: absolute; left: 18px; top: 172px; width: 120px; height: 3px; background: #C2A050; }
+
+  /* B 电竞 HUD */
+  .artB { background: linear-gradient(160deg, #0B1220 0%, #101B30 100%); color: #E8F4F8; font-family: "JetBrains Mono", monospace; }
+  .artB .grid { position: absolute; inset: 0; background-image: linear-gradient(rgba(77, 225, 255, 0.07) 1px, transparent 1px), linear-gradient(90deg, rgba(77, 225, 255, 0.07) 1px, transparent 1px); background-size: 26px 26px; }
+  .artB .hudcard {
+    position: absolute; left: 16px; top: 20px; width: 168px;
+    background: rgba(16, 28, 46, 0.92); border: 1px solid rgba(77, 225, 255, 0.45);
+    clip-path: polygon(0 0, calc(100% - 14px) 0, 100% 14px, 100% 100%, 14px 100%, 0 calc(100% - 14px));
+    padding: 13px 14px;
+  }
+  .artB .tag { font-size: 9px; letter-spacing: 0.22em; color: #4DE1FF; }
+  .artB .w { font-size: 20px; font-weight: 700; margin-top: 2px; }
+  .artB .bar { height: 5px; background: rgba(77, 225, 255, 0.15); margin-top: 10px; position: relative; }
+  .artB .bar i { position: absolute; inset: 0 28% 0 0; background: #4DE1FF; box-shadow: 0 0 10px rgba(77, 225, 255, 0.8); }
+  .artB .stat { display: flex; justify-content: space-between; font-size: 9px; color: #7FA8B8; margin-top: 6px; }
+  .artB .crosshair { position: absolute; right: 22px; top: 30px; width: 44px; height: 44px; border: 1px solid rgba(77, 225, 255, 0.5); border-radius: 50%; }
+  .artB .crosshair::before, .artB .crosshair::after { content: ""; position: absolute; background: rgba(77, 225, 255, 0.7); }
+  .artB .crosshair::before { left: 50%; top: -6px; bottom: -6px; width: 1px; }
+  .artB .crosshair::after { top: 50%; left: -6px; right: -6px; height: 1px; }
+  .artB .rank { position: absolute; left: 16px; bottom: 18px; font-size: 10px; letter-spacing: 0.18em; color: #FFC155; border: 1px solid rgba(255, 193, 85, 0.5); padding: 6px 12px; clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 8px 100%, 0 calc(100% - 8px)); }
+  .artB .ticks { position: absolute; right: 18px; bottom: 20px; font-size: 9px; color: #7FA8B8; text-align: right; line-height: 1.7; }
+
+  /* C 谷子徽章收集 */
+  .artC { background: #FFFFFF; color: #26303C; font-family: "Noto Sans SC", sans-serif; }
+  .artC .shelf { position: absolute; inset: 18px 16px auto; display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+  .artC .bdg { aspect-ratio: 1; border-radius: 50%; display: grid; place-items: center; font-size: 17px; position: relative; border: 3px solid; box-shadow: 0 4px 10px -4px rgba(38, 48, 60, 0.3); background: #fff; }
+  .artC .bdg small { position: absolute; bottom: -7px; font-size: 8px; font-weight: 900; background: #26303C; color: #fff; border-radius: 99px; padding: 1px 7px; letter-spacing: 0.08em; }
+  .artC .b1 { border-color: #B9C2CB; }
+  .artC .b2 { border-color: #3E97DE; }
+  .artC .b3 { border-color: #9B6DFF; background: linear-gradient(135deg, #FFF 60%, #F0E9FF); }
+  .artC .b4 { border-color: transparent; background: conic-gradient(#FFD97A, #F6B73C, #FFEDBB, #F6B73C, #FFD97A); }
+  .artC .b4 .in { width: 78%; height: 78%; border-radius: 50%; background: #FFF9EC; display: grid; place-items: center; }
+  .artC .b5 { border-style: dashed; border-color: #C9D2DB; color: #C9D2DB; }
+  .artC .strip { position: absolute; left: 16px; right: 16px; bottom: 52px; background: #F5F7FA; border: 1.5px solid #E4E9EF; border-radius: 12px; padding: 9px 13px; font-size: 11px; font-weight: 700; display: flex; justify-content: space-between; align-items: center; }
+  .artC .strip em { font-style: normal; color: #9B6DFF; }
+  .artC .btnc { position: absolute; left: 16px; bottom: 14px; background: #26303C; color: #fff; font-size: 11.5px; font-weight: 800; padding: 8px 18px; border-radius: 999px; }
+  .artC .hidden-hint { position: absolute; right: 16px; bottom: 20px; font-size: 10px; color: #98A3AE; }
+
+  .vote {
+    margin-top: 22px; border: 1.5px dashed var(--gold-fill); background: var(--gold-soft);
+    border-radius: 14px; padding: 16px 20px; font-size: 14px;
+  }
+  .vote b { color: var(--gold); }
+
+  /* ── 合规 ── */
+  .comp { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 26px; }
+  .comp .item { display: flex; gap: 12px; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 14px 16px; }
+  .comp .tick { flex: none; width: 22px; height: 22px; border-radius: 50%; background: var(--green-soft); color: var(--green); display: grid; place-items: center; font-size: 12px; font-weight: 900; margin-top: 3px; }
+  .comp b { font-size: 14px; display: block; }
+  .comp small { font-size: 12px; color: var(--muted); }
+
+  /* ── 试点 ── */
+  .steps { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-top: 26px; counter-reset: st; }
+  .step { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 20px; position: relative; }
+  .step::before {
+    counter-increment: st; content: counter(st);
+    font-family: "JetBrains Mono", monospace; font-weight: 700;
+    position: absolute; top: -13px; left: 18px; width: 26px; height: 26px; border-radius: 8px;
+    background: var(--blue); color: #fff; display: grid; place-items: center; font-size: 13px;
+  }
+  .step b { display: block; font-size: 14.5px; margin: 4px 0 5px; }
+  .step p { font-size: 12.5px; color: var(--muted); }
+
+  footer { padding: 40px 0 56px; border-top: 1px solid var(--line); }
+  footer .wrap { display: flex; flex-wrap: wrap; gap: 10px 28px; font-size: 12.5px; color: var(--muted); }
+
+  @media (max-width: 860px) {
+    .claims, .styles { grid-template-columns: 1fr; }
+    .exam { grid-template-columns: repeat(2, 1fr); }
+    .cards, .steps { grid-template-columns: 1fr 1fr; }
+    .comp { grid-template-columns: 1fr; }
+    .layer { grid-template-columns: 1fr; gap: 8px; }
+    .layer .lv { border-right: none; border-bottom: 1px solid var(--line); padding: 0 0 8px; }
+  }
+  @media (max-width: 520px) {
+    .cards, .steps, .exam { grid-template-columns: 1fr; }
+  }
+</style>
+
+<!-- ══ 封面 ══ -->
+<section class="cover">
+  <div class="wrap">
+    <div class="doc">合作方案 · V1 · 2026-08 <span style="letter-spacing: 0.05em;">(内部评审版,学校名待定)</span></div>
+    <h1>为「贵校」量身定制的<br>初中英语<span class="u">听说学习平台</span></h1>
+    <p class="sub">基于牛津译林版教材与江苏省中考听说考纲,由 AI 大模型与专业语音评测引擎驱动——不是买一套标准品,是为这所学校做一套合身的。</p>
+    <div class="claims">
+      <div class="claim"><i>🎯</i><b>考什么,练什么</b><span>与江苏中考听说人机对话考试同构:5 大题、30 分制、全真流程,考纲年更写进合同</span></div>
+      <div class="claim"><i>🤖</i><b>AI 因材施教</b><span>自由情景对话、逐句发音纠错、作文批改、每题讲解——不止跟读打分</span></div>
+      <div class="claim"><i>🏫</i><b>学校说了算</b><span>内容跟校进度走、数据归学校、界面学生投票选、需求两周一迭代</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ 为什么定制 ══ -->
+<section>
+  <div class="wrap">
+    <span class="eyebrow">为什么定制,而不是买成品</span>
+    <h2 class="sec-title">标准品服务「所有学校」,定制服务「这所学校」</h2>
+    <p class="sec-lead">以科大讯飞 E听说为代表的标准品功能成熟、覆盖面广;但产品形态、内容节奏与收费模式对所有学校一视同仁。定制平台把同样的核心能力,按贵校的进度、机房条件和管理习惯重新组装。</p>
+    <div class="tablewrap" style="margin-top: 26px;">
+      <table>
+        <tr><th>维度</th><th>市面标准品</th><th>本方案(定制)</th></tr>
+        <tr><td><b>内容</b></td><td>全国通用题库与节奏</td><td class="ok">跟贵校教学进度与译林教材单元逐一对齐,考纲变化 30 天内更新</td></tr>
+        <tr><td><b>口语训练</b></td><td>以跟读打分、固定题目为主</td><td class="ok">AI 自由情景对话 + 逐句纠错 + 换说法建议(大模型驱动)</td></tr>
+        <tr><td><b>设备</b></td><td>常绑定自有学习机/App</td><td class="ok">纯网页,机房 PC / 平板 / 家庭浏览器直接用,零硬件采购</td></tr>
+        <tr><td><b>收费</b></td><td>硬件 + 会员分层收费为主</td><td class="ok">学校采购制一口价,学生与家长零付费,产品内无任何商业化</td></tr>
+        <tr><td><b>需求响应</b></td><td>标准产品排期</td><td class="ok">创始团队直接对接,需求两周一迭代,问题 48 小时响应</td></tr>
+        <tr><td><b>数据</b></td><td>存于厂商平台</td><td class="ok">学情数据归属学校,合同写明;支持校内私有化部署方案</td></tr>
+      </table>
+    </div>
+    <p class="hint" style="margin-top: 12px;">※ 语音评测采用与各地听说考试同类的专业引擎(讯飞开放平台 / 驰声,商用授权),评分精度不因定制打折。</p>
+  </div>
+</section>
+
+<!-- ══ 中考模考 ══ -->
+<section>
+  <div class="wrap">
+    <span class="eyebrow">核心功能 · 一</span>
+    <h2 class="sec-title">江苏中考听说全真模考</h2>
+    <p class="sec-lead">江苏中考英语听力口语为全省统一人机对话考试,满分 30 分、约 30 分钟、每年 4 月最后一个周末机房机考。平台按现行考纲 1:1 复刻:</p>
+    <div class="exam">
+      <div class="ex"><span class="pt">10<em> 分</em></span><b>听对话回答问题</b><small>听力 · 短对话选择作答</small></div>
+      <div class="ex"><span class="pt">10<em> 分</em></span><b>听对话和短文答题</b><small>听力 · 长对话与独白</small></div>
+      <div class="ex oral"><span class="pt">3<em> 分</em></span><b>朗读短文</b><small>口语 · 2026 年官方 24 篇,全部出自译林版教材</small></div>
+      <div class="ex oral"><span class="pt">2<em> 分</em></span><b>情景问答</b><small>口语 · 听问即答</small></div>
+      <div class="ex oral"><span class="pt">5<em> 分</em></span><b>话题简述</b><small>口语 · 官方 12 话题,无中文提示,连说至少 7 句</small></div>
+    </div>
+    <div class="chips">
+      <span class="chip hot">全真模考:试音 → 计时 → 交卷,界面节奏仿机房</span>
+      <span class="chip">朗读 24 篇逐句跟读,错读单词逐个标红</span>
+      <span class="chip">话题简述:自建简述稿 → 背诵检测 → 脱稿录音评分</span>
+      <span class="chip">听力错因归类(数字/时间/地点…)</span>
+      <span class="chip">五维评分:语音准确性 · 流利度 · 内容完整性 · 语法 · 韵律</span>
+      <span class="chip hot">考纲年更承诺写进合同(2026 年即新增 6 篇朗读)</span>
+    </div>
+    <p class="hint" style="margin-top: 16px;">评分可信度:试点学期将平台评分与校内统一模拟考成绩做对齐分析(经家长知情同意),用贵校自己的数据验证「平台分 ≈ 考试分」。</p>
+  </div>
+</section>
+
+<!-- ══ AI 能力 ══ -->
+<section>
+  <div class="wrap">
+    <span class="eyebrow">核心功能 · 二</span>
+    <h2 class="sec-title">AI 能力:对话、纠错、批改、讲解</h2>
+    <div class="stack">
+      <div class="layer">
+        <div class="lv">引擎<b>AI 对话</b></div>
+        <p>DeepSeek V4 大模型驱动的情景对话(点餐/问路/交友…与单元同步):学生自由表达,AI 即时纠错并给出更地道的说法;低延迟模式保证对话流畅。</p>
+      </div>
+      <div class="layer">
+        <div class="lv">引擎<b>语音评测</b></div>
+        <p>专业口语评测引擎(讯飞开放平台 / 驰声,商用授权):音素级发音反馈、朗读/简述多维评分,与听说考试同类技术。</p>
+      </div>
+      <div class="layer">
+        <div class="lv">引擎<b>批改与讲解</b></div>
+        <p>作文 AI 逐句批改 + 教师复核工作流;每道练习题配 AI 讲解并经抽样人工审核,发现错误一键报错、48 小时修复。</p>
+      </div>
+      <div class="layer">
+        <div class="lv">底座<b>安全与合规</b></div>
+        <p>三层内容安全(输入过滤 → 护栏提示词 → 输出审核);AI 生成内容依法标识;内置未成年人模式与使用时长管理,家长与教师双端管控。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ 服务承诺 ══ -->
+<section>
+  <div class="wrap">
+    <span class="eyebrow">服务承诺</span>
+    <h2 class="sec-title">八条承诺,写进合同</h2>
+    <div class="cards">
+      <div class="card"><span class="no2">01</span><b>学生零付费</b><p>学校采购一口价,产品内无广告、无会员、无内购。</p></div>
+      <div class="card"><span class="no2">02</span><b>内容年更</b><p>考纲发布后 30 天内完成篇目与话题更新。</p></div>
+      <div class="card"><span class="no2">03</span><b>每题有讲解</b><p>AI 生成 + 抽样人审,错误 48 小时修复。</p></div>
+      <div class="card"><span class="no2">04</span><b>零硬件依赖</b><p>纯 Web,现有机房与平板直接用,永远是最新版。</p></div>
+      <div class="card"><span class="no2">05</span><b>数据归学校</b><p>学情数据归属与导出权写进合同。</p></div>
+      <div class="card"><span class="no2">06</span><b>两周一迭代</b><p>教研组的需求进入双周迭代,创始团队直接对接。</p></div>
+      <div class="card"><span class="no2">07</span><b>教师端标配</b><p>布置作业、班级学情、组织模考、学期报告一键导出。</p></div>
+      <div class="card"><span class="no2">08</span><b>不排名</b><p>激励用匿名段位与个人进步曲线,符合教育部规定。</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ 视觉方向 ══ -->
+<section>
+  <div class="wrap">
+    <span class="eyebrow">界面风格 · 基于初中生审美调研</span>
+    <h2 class="sec-title">三个候选风格,让学生自己投票</h2>
+    <p class="sec-lead">调研结论:圆滚滚的低幼卡通在初中生里已被视为「小学生审美」;真正受欢迎的是新中式国风、电竞科技感与「徽章收集」文化(吧唧/集换卡是当下校园硬通货)。以下三个方向均按「学生觉得酷 + 学校能接受」双标准筛选:</p>
+    <div class="styles">
+      <div class="style">
+        <div class="art artA">
+          <span class="vtext">腹有诗书</span>
+          <span class="ink"></span>
+          <svg class="mtn" viewBox="0 0 320 74" preserveAspectRatio="none"><path d="M0 74 L60 26 L104 58 L150 14 L204 60 L250 34 L320 70 L320 74 Z" fill="#22303A" opacity="0.14"/><path d="M0 74 L80 44 L140 66 L210 38 L272 62 L320 48 L320 74 Z" fill="#B5432A" opacity="0.12"/></svg>
+          <div class="cardx">
+            <div class="w">creative</div>
+            <div class="p">/kriˈeɪtɪv/ · adj.</div>
+            <div class="m">有创造力的</div>
+            <div class="seal">木子</div>
+          </div>
+          <span class="goldline"></span>
+          <span class="btnx">开 始 跟 读</span>
+        </div>
+        <div class="meta">
+          <h3>方向 A · 新中式 × 二次元</h3>
+          <p>参照:原神璃月、国创番剧海报、故宫文创。水墨底纹 + 宋式配色(黛青/朱砂/金)+ 书法竖排点缀。</p>
+          <div class="aud">
+            <span><i class="s1">学生</i>二次元语法,不土</span>
+            <span><i class="s2">学校</i>传统文化内核,最好向家长与上级解释</span>
+          </div>
+        </div>
+      </div>
+      <div class="style">
+        <div class="art artB">
+          <span class="grid"></span>
+          <div class="hudcard">
+            <div class="tag">WORD // UNIT 01</div>
+            <div class="w">creative</div>
+            <div class="bar"><i></i></div>
+            <div class="stat"><span>ACCURACY 92</span><span>COMBO ×7</span></div>
+          </div>
+          <span class="crosshair"></span>
+          <span class="rank">RANK · GOLD Ⅱ</span>
+          <div class="ticks">SPEAKING DRILL<br>READY_</div>
+        </div>
+        <div class="meta">
+          <h3>方向 B · 电竞 / 科幻 HUD</h3>
+          <p>参照:无畏契约、三角洲、KPL 赛事视觉。深空底 + 单一霓虹色 + 斜切几何与数据条,全程无武器元素。</p>
+          <div class="aud">
+            <span><i class="s1">学生</i>当下最强「酷」符号,男生尤其吃</span>
+            <span><i class="s2">学校</i>可叙述为「科技素养」;女生接受度需投票验证</span>
+          </div>
+        </div>
+      </div>
+      <div class="style">
+        <div class="art artC">
+          <div class="shelf">
+            <span class="bdg b1">📖<small>R</small></span>
+            <span class="bdg b2">🎧<small>SR</small></span>
+            <span class="bdg b3">💬<small>SSR</small></span>
+            <span class="bdg b4"><span class="in">🏆</span><small>UR</small></span>
+            <span class="bdg b5">?</span>
+            <span class="bdg b5">?</span>
+            <span class="bdg b1">✏️<small>R</small></span>
+            <span class="bdg b5">?</span>
+          </div>
+          <div class="strip"><span>本学期徽章 <em>4/12</em></span><span>隐藏款 ×1</span></div>
+          <span class="btnc">继续收集 →</span>
+          <span class="hidden-hint">连续 7 天解锁闪面款</span>
+        </div>
+        <div class="meta">
+          <h3>方向 C · 徽章收集体系</h3>
+          <p>参照:吧唧墙、集换卡稀有度(R/SR/SSR)、成就徽章。学习成果变成可收集、可展示的成套徽章。</p>
+          <div class="aud">
+            <span><i class="s1">学生</i>直接接入「谷子/吧唧」校园社交文化</span>
+            <span><i class="s2">学校</i>本质是激励体系,健康且可延伸到评优活动</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="vote">💡 <b>建议:C 作为激励机制层,与 A 或 B 的界面皮肤叠加使用;皮肤由试点班学生投票决定。</b>「界面是你们学生自己选的」——这既是最准的调研,也是汇报会上最有说服力的一页。</div>
+  </div>
+</section>
+
+<!-- ══ 合规 ══ -->
+<section>
+  <div class="wrap">
+    <span class="eyebrow">合规</span>
+    <h2 class="sec-title">进校产品的规矩,我们先做到</h2>
+    <div class="comp">
+      <div class="item"><span class="tick">✓</span><div><b>教育移动应用备案</b><small>按教育部要求完成备案与进校使用流程,口径与属地教育局确认</small></div></div>
+      <div class="item"><span class="tick">✓</span><div><b>无广告 · 零商业化</b><small>产品内不含任何广告、会员、内购,不向学生与家长收费</small></div></div>
+      <div class="item"><span class="tick">✓</span><div><b>不公布成绩排名</b><small>激励采用匿名段位制与个人进步维度,不展示真实姓名排名</small></div></div>
+      <div class="item"><span class="tick">✓</span><div><b>AI 内容标识与未成年人模式</b><small>AI 生成内容依法显式标识;对话服务内置未成年人身份识别与时长管理</small></div></div>
+      <div class="item"><span class="tick">✓</span><div><b>未成年人数据保护</b><small>最小化收集、家长知情同意、数据归属学校、加密存储</small></div></div>
+      <div class="item"><span class="tick">✓</span><div><b>内容版权合规</b><small>词表与练习内容原创自建;教材原文与配套音频走出版社授权路径后接入</small></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ 试点 ══ -->
+<section>
+  <div class="wrap">
+    <span class="eyebrow">落地路径</span>
+    <h2 class="sec-title">先试点,用一个学期证明</h2>
+    <div class="steps">
+      <div class="step"><b>方案确认</b><p>确认年级与班级、机房条件、内容版权路径、视觉投票机制。</p></div>
+      <div class="step"><b>MVP 交付(6-8 周)</b><p>七年级 2 个单元全闭环 + 中考模考三大口语题型 + 教师端基础版。</p></div>
+      <div class="step"><b>试点一学期(2 个班)</b><p>学生投票定皮肤;平台评分与校内模拟考成绩做对齐验证。</p></div>
+      <div class="step"><b>学期报告 → 扩面</b><p>用数据说话:使用率、成绩相关性、师生反馈,再谈全年级铺开。</p></div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <span>Muzi Studio 木子工作室 · 全栈工程师团队</span>
+    <span>本页为方案评审版:「贵校」为占位,商务报价以正式报价单为准</span>
+    <span>技术依据与调研来源备索</span>
+  </div>
+</footer>
