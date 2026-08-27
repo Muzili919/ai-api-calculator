@@ -80,11 +80,42 @@ DeepSeek 是一个 key,讯飞是 **APPID + APIKey + APISecret** 三个 32 位字
 
 推荐我们持有,**合同里把 API 成本写进服务费**,对客户呈现为"包含在服务里"。同时在服务端做每日调用上限,防止意外超支。
 
-## 三、示范音 TTS(一次性,可稍后)
+## 三、示范音 TTS ⬅ 当前卡点
 
-- 首选 Azure Speech(en-GB Neural HD):azure.com 注册 → Speech 资源 → 拿 Key + Region
-- 全境内方案:火山引擎 / 讯飞在线 TTS
-- 一次性生成,成本约 ¥27(见 [`04-speech-decision.md`](04-speech-decision.md)),不急,MVP 后期再做
+讯飞 TTS 实测不达标(老一代英文音色 + 美音,新一代未授权),必须换引擎。
+
+### 方案 A:Azure Speech(音质首选)
+
+**F0 免费层每月 50 万字符,永久** —— 全量内容约 17 万字符,零成本。
+
+| # | 步骤 |
+|---|---|
+| 1 | azure.microsoft.com/zh-cn/free → 免费开始使用 |
+| 2 | 微软账号登录(outlook 邮箱即可)+ 手机验证 |
+| 3 | ⚠️ **绑定 Visa / Mastercard 双币卡**($1 预授权验证,不扣款;支付宝银联不支持) |
+| 4 | portal.azure.com → 创建资源 → 搜 **Speech** → 语音服务 |
+| 5 | 区域选 **East Asia / Southeast Asia**;**定价层必须选 `F0`** |
+| 6 | 资源页 → 左侧「密钥和终结点」→ 复制 **KEY 1** 与 **位置/区域** |
+
+```bash
+# server/.env.local
+AZURE_SPEECH_KEY=…
+AZURE_SPEECH_REGION=eastasia
+TTS_VOICE=en-GB-SoniaNeural      # 英式,匹配译林教材;男声可用 en-GB-RyanNeural
+```
+然后 `node tts-batch.mjs --provider=azure` 全量生成。
+注:F0 层有并发限制,批量生成串行跑即可(我们本来就是离线批处理,慢不影响)。
+
+### 方案 B:火山引擎豆包 TTS(无国际信用卡 / 要求全境内时)
+
+- 支付宝可付、开票方便、**数据不出境**——学校采购时是加分项
+- 约 ¥0.003/千字符 → 全量 17 万字符 ≈ **¥0.5**;流式首包约 120ms,英文 WER 3.5%
+- ⚠️ 需现场确认**是否有英式(en-GB)音色**,其英文音色以美音为主
+
+### 决策建议
+
+先试 A(音质天花板 + 免费覆盖全量);信用卡这关过不去就转 B。
+管线已抽象为 provider,换引擎不改业务代码:删掉 `audio/` → 换 `--provider` 重跑。
 
 ## 四、二期(暂不开)
 
