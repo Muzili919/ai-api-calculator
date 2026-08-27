@@ -124,6 +124,8 @@ const EXT = args.provider === "xf" ? "wav" : "mp3";
 // manifest 以「原文 → 文件名」索引,前端拿到文本即可查表播放
 const manifest = existsSync(join(outDir, "manifest.json"))
   ? JSON.parse(readFileSync(join(outDir, "manifest.json"), "utf8")) : {};
+const manifestPath = join(outDir, "manifest.json");
+const flush = () => writeFileSync(manifestPath, JSON.stringify(manifest, null, 2));
 let done = 0, skipped = 0, failed = 0;
 for (const it of items) {
   const hash = createHash("sha1").update(`${args.provider}|${VOICE}|${it.text}`).digest("hex").slice(0, 16);
@@ -134,9 +136,9 @@ for (const it of items) {
     writeFileSync(file, await gen(it.text));
     manifest[it.text] = name;
     done++;
-    if (done % 10 === 0) console.log(`  已生成 ${done}…`);
+    if (done % 5 === 0) { flush(); console.log(`  已生成 ${done}…`); }   // 边跑边写盘,中断不丢映射
   } catch (e) { failed++; console.error(`FAIL ${it.id}: ${e.message}`); }
 }
-writeFileSync(join(outDir, "manifest.json"), JSON.stringify(manifest, null, 2));
+flush();
 console.log(`完成:新生成 ${done} / 复用 ${skipped} / 失败 ${failed} → ${outDir}`);
 console.log(`音色 ${VOICE}(${args.provider});换引擎后删除 audio/ 重跑即可全量替换`);
