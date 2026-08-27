@@ -127,6 +127,22 @@ node tts-batch.mjs --provider=volc     # 全量生成 → audio/ + manifest.json
    「版本」显示红色「回收」,说明服务实例已回收/未激活 —— 此时任何音色调用都报
    `3001 load grant: requested grant not found in SaaS storage`(中文默认音色也一样,是服务级不是音色级)
 
+⚠️ **当前阻塞(2026-08-27)**:`load grant: requested grant not found in SaaS storage`
+
+代码侧已排除:v1(`/api/v1/tts`)与 v3(`/api/v3/tts/unidirectional`)两套接口 ×
+cluster(`volcano_tts`/`volcano_mega`/`volcano_icl`)× 鉴权写法(`Bearer;` / `Bearer `)×
+resource_id(`volc.service_type.10029` / `volc.megatts.default`)× 6 个音色,**全部同一错误**
+→ 判定为账号侧无服务授权,非代码问题。
+
+控制台呈现矛盾:「开通服务」页按钮显示**已开通**(灰),但「服务详情」表中
+版本显示红色**「回收」**、用量限额与并发限额均为 `--`(音色实例本身正常,运行中)。
+**「回收」= 服务实例已被回收**,故 grant 不存在。
+
+排查顺序:
+1. **费用中心**:后付费服务需绑定支付方式/有余额,欠费会导致实例回收 ← 最可能
+2. **换应用试**:账号下另有 `default`(APPID `6842411651`),接入能力同样含豆包语音合成模型 2.0
+3. **提工单**:状态矛盾需火山后台核查,附 `x-tt-logid` 可直接定位
+
 ⚠️ **音色发音口音**:本项目账号现有英文音色 `BV503_streaming`(Ariana)/ `BV504_streaming`(Jackson)
 **语种为英语但均标注「美式发音」**,与译林教材的英式不符。三条路:
 先用美音跑通(质量仍显著优于讯飞老引擎)/ 音色列表页单独购买英式音色 /
