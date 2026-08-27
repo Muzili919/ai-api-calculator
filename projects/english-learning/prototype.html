@@ -722,9 +722,14 @@
   <!-- ══ 情景 ══ -->
   <div class="screen" id="scr-scen">
     <div id="scen-list">
+      <div class="scen" style="border-color:var(--gold-fill); background:linear-gradient(120deg, var(--gold-soft), transparent 70%), var(--surface);">
+        <div class="si" style="background:var(--gold-soft);">🤖</div>
+        <div><b>AI 自由对话 · Free Talk</b><small id="ai-status">检测服务端中…</small></div>
+        <button class="btn btn-seal btn-sm" id="ai-start" style="margin-left:auto;" disabled>开始</button>
+      </div>
       <div class="scen">
         <div class="si" style="background:var(--seal-soft);">🍔</div>
-        <div><b>在快餐店 · Ordering Food</b><small>学会礼貌地点餐</small></div>
+        <div><b>在快餐店 · Ordering Food</b><small>选句练习 · 学会礼貌地点餐</small></div>
         <button class="btn btn-teal btn-sm" id="scen-start" style="margin-left:auto;">开始</button>
       </div>
       <div class="scen"><div class="si" style="background:var(--teal-soft);">🗺️</div><div><b>问路 · Asking the Way</b><small>完成上一场景解锁</small></div><svg class="ic lock" viewBox="0 0 24 24"><use href="#i-lock"/></svg></div>
@@ -753,6 +758,19 @@
         <div class="chat" id="chat"></div>
         <div class="choices" id="choices"></div>
         <div class="tip" id="scen-tip"></div>
+      </div>
+    </div>
+
+    <div id="scen-play-ai" style="display:none;">
+      <div class="card">
+        <h3>🤖 AI 自由对话 <span class="hint">Momo 在快餐店等你 · 说错了会帮你改</span></h3>
+        <div class="chat" id="ai-chat"></div>
+        <div class="spellrow">
+          <input id="ai-input" placeholder="Type in English…" autocomplete="off" autocapitalize="off" spellcheck="false">
+          <button class="btn btn-seal" id="ai-send">发送</button>
+        </div>
+        <p class="hint" style="margin-top:8px;">说满 4 句完成今日情景任务;正式版支持语音输入与发音评分。
+          <button class="btn btn-o btn-sm" id="ai-back" style="margin-left:8px;">返回</button></p>
       </div>
     </div>
   </div>
@@ -1279,15 +1297,74 @@
     $("scen-list").style.display = "none"; $("scen-play").style.display = "";
     $("chat").innerHTML = ""; nextTurn();
   });
-  function bubble(text, me) {
+  function bubble(text, me, hostId) {
     var row = document.createElement("div");
     row.className = "msg" + (me ? " me" : "");
+    var safe = String(text).replace(/&/g, "&amp;").replace(/</g, "&lt;");
     row.innerHTML = "<span class='ava'>" + (me ? ME : MOMO) + "</span>" +
-      "<div class='bub " + (me ? "mebub" : "npc") + "'>" + text +
+      "<div class='bub " + (me ? "mebub" : "npc") + "'>" + safe +
       (me ? "" : " <button class='sp2' aria-label='朗读'>🔊</button>") + "</div>";
     if (!me) row.querySelector(".sp2").addEventListener("click", function () { say(text); });
-    $("chat").appendChild(row);
+    $(hostId || "chat").appendChild(row);
   }
+
+  /* ── AI 自由对话(DeepSeek,需本地服务端)──────── */
+  var AI_ON = false, aiHist = [], aiTurns = 0, aiBusy = false;
+  var AI_OPENING = "Good afternoon! Welcome to Happy Burger. I'm Momo. What would you like today?";
+  (function probeAI() {
+    function offline() { $("ai-status").textContent = "本地运行 server 后可用(在线预览为静态演示)"; }
+    try {
+      fetch("/api/health").then(function (r) { return r.ok ? r.json() : null; }).then(function (d) {
+        if (d && d.ok) { AI_ON = true; $("ai-status").textContent = "已连接 · " + d.model; $("ai-start").disabled = false; }
+        else offline();
+      }).catch(offline);
+    } catch (e) { offline(); }
+  })();
+  $("ai-start").addEventListener("click", function () {
+    if (!AI_ON) { toast("先运行 server 目录下的服务端(见 README)"); return; }
+    aiHist = [{ role: "assistant", content: AI_OPENING }]; aiTurns = 0;
+    $("scen-list").style.display = "none"; $("scen-play").style.display = "none"; $("scen-play-ai").style.display = "";
+    $("ai-chat").innerHTML = ""; bubble(AI_OPENING, false, "ai-chat"); say(AI_OPENING);
+    $("ai-input").focus();
+  });
+  $("ai-back").addEventListener("click", function () {
+    $("scen-play-ai").style.display = "none"; $("scen-list").style.display = "";
+  });
+  function aiSend() {
+    if (aiBusy || !AI_ON) return;
+    var v = $("ai-input").value.trim();
+    if (!v) return;
+    $("ai-input").value = "";
+    bubble(v, true, "ai-chat");
+    aiHist.push({ role: "user", content: v });
+    aiBusy = true; $("ai-send").disabled = true;
+    var typing = document.createElement("div");
+    typing.className = "msg"; typing.id = "ai-typing";
+    typing.innerHTML = "<span class='ava'>" + MOMO + "</span><div class='bub npc'>…</div>";
+    $("ai-chat").appendChild(typing);
+    fetch("/api/chat", {
+      method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ scenario: "restaurant", messages: aiHist })
+    }).then(function (r) { return r.json(); }).then(function (d) {
+      var t = $("ai-typing"); if (t) t.remove();
+      if (!d || !d.reply) { toast("AI 没回话,再试一次"); return; }
+      bubble(d.reply, false, "ai-chat"); say(d.reply);
+      aiHist.push({ role: "assistant", content: d.reply });
+      if (d.correction) {
+        var c = document.createElement("div");
+        c.className = "tip"; c.style.margin = "0 0 2px 42px";
+        c.textContent = "✏️ 更地道:" + d.correction + (d.tip ? " —— " + d.tip : "");
+        $("ai-chat").appendChild(c);
+      }
+      aiTurns++;
+      if (aiTurns === 4 && !S.tasks[S.grade + "-s"]) { doneTask("s", 25, "AI 对话完成"); confetti(); }
+    }).catch(function () {
+      var t = $("ai-typing"); if (t) t.remove();
+      toast("连接失败,稍后再试");
+    }).finally(function () { aiBusy = false; $("ai-send").disabled = false; });
+  }
+  $("ai-send").addEventListener("click", aiSend);
+  $("ai-input").addEventListener("keydown", function (e) { if (e.key === "Enter") aiSend(); });
   function nextTurn() {
     $("scen-tip").textContent = "";
     if (ci >= SCEN.length) {

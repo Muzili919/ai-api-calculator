@@ -16,6 +16,18 @@
 | [`research/`](research/) | 8 组调研原始资料(讯飞功能/痛点、初中生审美、学习App设计、语音评测API、DeepSeek、江苏中考口语、缺口批判),含全部来源链接 |
 | [`prototype.html`](prototype.html) | 学生端交互原型 V2(岛屿版) |
 | [`proposal.html`](proposal.html) | 甲方汇报页(方案书评审版,含三个视觉方向风格小样) |
+| [`server/`](server/) | AI 对话演示服务端(DeepSeek 代理,零依赖 Node) |
+
+## 本地运行 AI 真对话
+
+```bash
+cd projects/english-learning/server
+cp .env.example .env.local   # 填入 DEEPSEEK_API_KEY(.env.local 已被 gitignore,绝不提交)
+node server.mjs              # → http://localhost:3210
+```
+
+打开后进「情景」页,「AI 自由对话」显示已连接即可开聊:自由输入英文,AI 扮演店员并实时纠错(JSON 结构:reply/correction/tip)。
+在线 Artifact 预览无服务端,该入口自动降级为提示态。
 
 ## 1. 产品结构
 

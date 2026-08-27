@@ -7,3 +7,5 @@ out/
 build/
 dist/
 ._*
+
+.env
