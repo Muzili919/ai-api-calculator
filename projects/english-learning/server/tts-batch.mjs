@@ -7,7 +7,7 @@
 import { readFileSync, existsSync, mkdirSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
-import { createHash } from "node:crypto";
+import { createHash, randomUUID } from "node:crypto";
 
 const ROOT = dirname(fileURLToPath(import.meta.url));
 const args = Object.fromEntries(process.argv.slice(2).map((a) => {
@@ -48,7 +48,7 @@ function loadItems() {
 const PRICING = [
   { name: "Azure Neural HD (en-GB)", usdPerM: 22, note: "音质最好;生成在流水线,播放走境内 CDN" },
   { name: "Azure 标准 Neural",       usdPerM: 16, note: "够用,更便宜" },
-  { name: "火山引擎豆包 TTS",         cnyPerK: 0.003, note: "全境内;流式低延迟,适合 AI 对话实时合成" },
+  { name: "火山引擎豆包 TTS(推荐)",  cnyPerK: 0.003, note: "全境内 · 支付宝 · 数据不出境 · 支持英式英文" },
 ];
 const USD_CNY = 7.1;
 
@@ -87,8 +87,11 @@ function loadEnv() {
 }
 loadEnv();
 
-const VOICE = process.env.TTS_VOICE ||
-  (args.provider === "xf" ? (process.env.XF_TTS_VCN || "henry") : "en-GB-SoniaNeural"); // 默认英式,匹配译林教材
+const VOICE = process.env.TTS_VOICE || {
+  xf:    process.env.XF_TTS_VCN || "henry",
+  volc:  process.env.VOLC_VOICE || "",        // 必填:控制台音色列表页挑英式英文音色
+  azure: "en-GB-SoniaNeural",
+}[args.provider] || "en-GB-SoniaNeural";      // 默认英式,匹配译林教材
 const PROVIDERS = {
   // Azure Speech REST:需 AZURE_SPEECH_KEY 与 AZURE_SPEECH_REGION
   async azure(text) {
@@ -108,6 +111,29 @@ const PROVIDERS = {
     if (!r.ok) throw new Error(`azure ${r.status}: ${(await r.text()).slice(0, 160)}`);
     return Buffer.from(await r.arrayBuffer());
   },
+};
+
+// 火山引擎(豆包)TTS —— 全境内首选
+// 需 .env.local:VOLC_APPID / VOLC_ACCESS_TOKEN / VOLC_VOICE(音色 ID,控制台音色列表页选英式英文)
+// 接口:POST https://openspeech.bytedance.com/api/v1/tts
+// ⚠️ 鉴权头是 `Bearer;<token>`(分号,不是空格),这是火山的写法,写错会 401
+PROVIDERS.volc = async (text) => {
+  const appid = process.env.VOLC_APPID, token = process.env.VOLC_ACCESS_TOKEN;
+  if (!appid || !token) throw new Error("缺少 VOLC_APPID / VOLC_ACCESS_TOKEN");
+  const r = await fetch("https://openspeech.bytedance.com/api/v1/tts", {
+    method: "POST",
+    headers: { Authorization: `Bearer;${token}`, "Content-Type": "application/json" },
+    body: JSON.stringify({
+      app: { appid, token, cluster: process.env.VOLC_CLUSTER || "volcano_tts" },
+      user: { uid: "shushan-batch" },
+      audio: { voice_type: VOICE, encoding: "mp3", speed_ratio: 1.0 },
+      request: { reqid: randomUUID(), text, operation: "query" },
+    }),
+  });
+  if (!r.ok) throw new Error(`volc HTTP ${r.status}: ${(await r.text()).slice(0, 160)}`);
+  const d = await r.json();
+  if (!d.data) throw new Error(`volc ${d.code}: ${d.message || "no audio"}`);
+  return Buffer.from(d.data, "base64");
 };
 
 // 讯飞在线合成(全境内备选;老一代英文音色,音质一般,仅作管线联调用)

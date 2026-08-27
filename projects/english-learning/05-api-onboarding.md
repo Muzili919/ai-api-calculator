@@ -83,39 +83,49 @@ DeepSeek 是一个 key,讯飞是 **APPID + APIKey + APISecret** 三个 32 位字
 ## 三、示范音 TTS ⬅ 当前卡点
 
 讯飞 TTS 实测不达标(老一代英文音色 + 美音,新一代未授权),必须换引擎。
+**已定:走火山引擎(豆包)TTS。** Azure 音质天花板更高,但注册需国际信用卡、
+且实测遇到微软账号租户报错,不值得为示范音耗时间;火山对学校项目反而更合适。
 
-### 方案 A:Azure Speech(音质首选)
+### 为什么火山更适合这个项目
 
-**F0 免费层每月 50 万字符,永久** —— 全量内容约 17 万字符,零成本。
+| | 火山引擎 | Azure |
+|---|---|---|
+| 注册付款 | 国内账号 + 支付宝 | 需 Visa/Mastercard 双币卡 |
+| 数据合规 | **全境内,数据不出境** — 学校采购的加分项 | 需说明"生成在境外流水线、播放走境内 CDN" |
+| 英式音色 | ✅ 官方称覆盖英语(美式、**英式**) | ✅ en-GB-SoniaNeural / RyanNeural |
+| 全量成本 | **≈ ¥0.5**(17 万字符 × ¥0.003/千字符) | 免费层内 ¥0(但注册成本高) |
+| 发票 | 国内对公开票 | 境外账单 |
+
+### 开通步骤
 
 | # | 步骤 |
 |---|---|
-| 1 | azure.microsoft.com/zh-cn/free → 免费开始使用 |
-| 2 | 微软账号登录(outlook 邮箱即可)+ 手机验证 |
-| 3 | ⚠️ **绑定 Visa / Mastercard 双币卡**($1 预授权验证,不扣款;支付宝银联不支持) |
-| 4 | portal.azure.com → 创建资源 → 搜 **Speech** → 语音服务 |
-| 5 | 区域选 **East Asia / Southeast Asia**;**定价层必须选 `F0`** |
-| 6 | 资源页 → 左侧「密钥和终结点」→ 复制 **KEY 1** 与 **位置/区域** |
+| 1 | volcengine.com 注册 → 实名认证(支付宝/银联) |
+| 2 | 控制台 → **语音技术** → 开通「语音合成」 |
+| 3 | **应用管理** → 创建应用 → 拿到 **APPID** 与 **Access Token** |
+| 4 | **音色列表**页 → 挑一个**英式英文**音色,复制其 `voice_type` ID |
+| 5 | 填入 `server/.env.local` 后跑批量生成 |
 
 ```bash
 # server/.env.local
-AZURE_SPEECH_KEY=…
-AZURE_SPEECH_REGION=eastasia
-TTS_VOICE=en-GB-SoniaNeural      # 英式,匹配译林教材;男声可用 en-GB-RyanNeural
+VOLC_APPID=…
+VOLC_ACCESS_TOKEN=…
+VOLC_VOICE=…            # 英式英文音色 ID(控制台音色列表页复制)
+# VOLC_CLUSTER=volcano_tts   # 一般默认即可
+
+node tts-batch.mjs --provider=volc     # 全量生成 → audio/ + manifest.json
 ```
-然后 `node tts-batch.mjs --provider=azure` 全量生成。
-注:F0 层有并发限制,批量生成串行跑即可(我们本来就是离线批处理,慢不影响)。
 
-### 方案 B:火山引擎豆包 TTS(无国际信用卡 / 要求全境内时)
+⚠️ 接口细节:鉴权头是 `Bearer;<token>`(**分号,不是空格**),这是火山的写法,写错会 401。
+适配器已按官方接口结构写好(`tts-batch.mjs` 的 `PROVIDERS.volc`),但**未经真实 key 验证**,
+首次跑建议先小批量试(改 `content.json` 或临时截断条目)。
 
-- 支付宝可付、开票方便、**数据不出境**——学校采购时是加分项
-- 约 ¥0.003/千字符 → 全量 17 万字符 ≈ **¥0.5**;流式首包约 120ms,英文 WER 3.5%
-- ⚠️ 需现场确认**是否有英式(en-GB)音色**,其英文音色以美音为主
+### 备选:Azure Speech(音质天花板,需国际信用卡)
 
-### 决策建议
-
-先试 A(音质天花板 + 免费覆盖全量);信用卡这关过不去就转 B。
-管线已抽象为 provider,换引擎不改业务代码:删掉 `audio/` → 换 `--provider` 重跑。
+F0 免费层每月 50 万字符;portal.azure.com → 创建 Speech 资源(定价层选 `F0`)→
+「密钥和终结点」拿 KEY 1 与区域,填 `AZURE_SPEECH_KEY` / `AZURE_SPEECH_REGION`,
+`node tts-batch.mjs --provider=azure` 即可。
+遇到「所选帐户在租户中不存在」报错:用**无痕窗口**重走,或改用 outlook.com 邮箱注册的微软账号。
 
 ## 四、二期(暂不开)
 
