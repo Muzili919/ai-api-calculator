@@ -7,6 +7,7 @@ import { createServer } from "node:http";
 import { readFileSync, existsSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
+import { ise } from "./xf.mjs";
 
 const ROOT = dirname(fileURLToPath(import.meta.url));
 
@@ -104,7 +105,21 @@ createServer(async (req, res) => {
       return send(res, 200, readFileSync(join(ROOT, "..", "prototype.html"), "utf8"), "text/html");
     }
     if (req.method === "GET" && url.pathname === "/api/health") {
-      return send(res, 200, { ok: true, model: MODEL });
+      return send(res, 200, { ok: true, model: MODEL, speech: !!process.env.XF_APPID });
+    }
+    if (req.method === "POST" && url.pathname === "/api/assess") {
+      if (!process.env.XF_APPID) return send(res, 503, { error: "speech_not_configured" });
+      let body = "";
+      for await (const chunk of req) { body += chunk; if (body.length > 6e6) return send(res, 413, { error: "audio_too_large" }); }
+      const { text, audio, category } = JSON.parse(body || "{}");
+      if (!text || !audio) return send(res, 400, { error: "missing_text_or_audio" });
+      const pcm = Buffer.from(audio, "base64");
+      if (pcm.length < 8000) return send(res, 200, { tooShort: true });   // < 0.25s,基本是误触
+      const r = await ise(pcm, String(text).slice(0, 500), { category: category || "read_sentence" });
+      return send(res, 200, {
+        total: r.total, accuracy: r.accuracy, fluency: r.fluency,
+        integrity: r.integrity, standard: r.standard, words: r.words,
+      });
     }
     if (req.method === "POST" && url.pathname === "/api/chat") {
       let body = "";

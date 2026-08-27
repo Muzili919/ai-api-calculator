@@ -9,3 +9,7 @@ dist/
 ._*
 
 .env
+sample.pcm
+sample.wav
+ise-result.xml
+audio/
