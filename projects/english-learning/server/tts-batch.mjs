@@ -109,23 +109,34 @@ const PROVIDERS = {
   },
 };
 
+// 讯飞在线合成(全境内备选;老一代英文音色,音质一般,仅作管线联调用)
+PROVIDERS.xf = async (text) => {
+  const { tts, pcmToWav } = await import("./xf.mjs");
+  return pcmToWav(await tts(text, { vcn: process.env.XF_TTS_VCN || "henry", speed: 42 }));
+};
+
 const gen = PROVIDERS[args.provider];
 if (!gen) { console.error(`未知 provider: ${args.provider}(可用:${Object.keys(PROVIDERS).join(", ")})`); process.exit(1); }
 
 const outDir = join(ROOT, "audio");
 mkdirSync(outDir, { recursive: true });
-const manifest = {};
-let done = 0, failed = 0;
+const EXT = args.provider === "xf" ? "wav" : "mp3";
+// manifest 以「原文 → 文件名」索引,前端拿到文本即可查表播放
+const manifest = existsSync(join(outDir, "manifest.json"))
+  ? JSON.parse(readFileSync(join(outDir, "manifest.json"), "utf8")) : {};
+let done = 0, skipped = 0, failed = 0;
 for (const it of items) {
-  const hash = createHash("sha1").update(`${VOICE}|${it.text}`).digest("hex").slice(0, 16);
-  const file = join(outDir, `${hash}.mp3`);
-  manifest[it.id] = { file: `${hash}.mp3`, text: it.text };
-  if (existsSync(file)) { done++; continue; }          // 幂等:已生成的跳过
+  const hash = createHash("sha1").update(`${args.provider}|${VOICE}|${it.text}`).digest("hex").slice(0, 16);
+  const name = `${hash}.${EXT}`;
+  const file = join(outDir, name);
+  if (existsSync(file)) { manifest[it.text] = name; skipped++; continue; }   // 幂等
   try {
     writeFileSync(file, await gen(it.text));
+    manifest[it.text] = name;
     done++;
-    if (done % 20 === 0) console.log(`  ${done}/${items.length}…`);
+    if (done % 10 === 0) console.log(`  已生成 ${done}…`);
   } catch (e) { failed++; console.error(`FAIL ${it.id}: ${e.message}`); }
 }
 writeFileSync(join(outDir, "manifest.json"), JSON.stringify(manifest, null, 2));
-console.log(`完成:${done} 成功 / ${failed} 失败 → ${outDir}`);
+console.log(`完成:新生成 ${done} / 复用 ${skipped} / 失败 ${failed} → ${outDir}`);
+console.log(`音色 ${VOICE}(${args.provider});换引擎后删除 audio/ 重跑即可全量替换`);

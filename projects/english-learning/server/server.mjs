@@ -104,6 +104,16 @@ createServer(async (req, res) => {
     if (req.method === "GET" && (url.pathname === "/" || url.pathname === "/index.html")) {
       return send(res, 200, readFileSync(join(ROOT, "..", "prototype.html"), "utf8"), "text/html");
     }
+    if (req.method === "GET" && url.pathname.startsWith("/audio/")) {
+      const name = url.pathname.slice(7);
+      if (!/^[\w.-]+$/.test(name)) return send(res, 400, { error: "bad_name" });
+      const f = join(ROOT, "audio", name);
+      if (!existsSync(f)) return send(res, 404, { error: "not_found" });
+      const type = name.endsWith(".json") ? "application/json"
+        : name.endsWith(".wav") ? "audio/wav" : "audio/mpeg";
+      res.writeHead(200, { "Content-Type": type, "Cache-Control": "public, max-age=31536000" });
+      return res.end(readFileSync(f));
+    }
     if (req.method === "GET" && url.pathname === "/api/health") {
       return send(res, 200, { ok: true, model: MODEL, speech: !!process.env.XF_APPID });
     }

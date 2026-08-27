@@ -1098,12 +1098,31 @@
     var t = $("toast"); t.textContent = msg; t.classList.add("on");
     clearTimeout(toast._t); toast._t = setTimeout(function () { t.classList.remove("on"); }, 1900);
   }
-  function say(text) {
+  /* 示范音:优先播放预生成音频(音质可控、弱网可缓存);
+     浏览器 TTS 仅作最后兜底——正式版不依赖它(见 04-speech-decision.md) */
+  var AUDIO_MAP = null, curAudio = null;
+  (function loadManifest() {
     try {
-      var u = new SpeechSynthesisUtterance(text);
-      u.lang = "en-US"; u.rate = 0.9;
-      speechSynthesis.cancel(); speechSynthesis.speak(u);
-    } catch (e) { toast("当前浏览器不支持语音合成"); }
+      fetch("/audio/manifest.json").then(function (r) { return r.ok ? r.json() : null; })
+        .then(function (m) { if (m) AUDIO_MAP = m; }).catch(function () {});
+    } catch (e) {}
+  })();
+  function say(text) {
+    var key = String(text).trim();
+    if (curAudio) { try { curAudio.pause(); } catch (e) {} curAudio = null; }
+    if (AUDIO_MAP && AUDIO_MAP[key]) {
+      curAudio = new Audio("/audio/" + AUDIO_MAP[key]);
+      curAudio.play().catch(fallbackTTS);
+      return;
+    }
+    fallbackTTS();
+    function fallbackTTS() {
+      try {
+        var u = new SpeechSynthesisUtterance(text);
+        u.lang = "en-GB"; u.rate = 0.9;      // 译林教材为英式,兜底也优先英音
+        speechSynthesis.cancel(); speechSynthesis.speak(u);
+      } catch (e) { toast("当前浏览器不支持语音合成"); }
+    }
   }
   function confetti() {
     var colors = ["#B5432A", "#C9A85C", "#46707C", "#7C5CB8", "#5A8A6A"];
