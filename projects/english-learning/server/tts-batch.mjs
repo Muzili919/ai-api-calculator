@@ -87,7 +87,8 @@ function loadEnv() {
 }
 loadEnv();
 
-const VOICE = process.env.TTS_VOICE || "en-GB-SoniaNeural"; // 英式,匹配译林教材
+const VOICE = process.env.TTS_VOICE ||
+  (args.provider === "xf" ? (process.env.XF_TTS_VCN || "henry") : "en-GB-SoniaNeural"); // 默认英式,匹配译林教材
 const PROVIDERS = {
   // Azure Speech REST:需 AZURE_SPEECH_KEY 与 AZURE_SPEECH_REGION
   async azure(text) {
@@ -112,7 +113,7 @@ const PROVIDERS = {
 // 讯飞在线合成(全境内备选;老一代英文音色,音质一般,仅作管线联调用)
 PROVIDERS.xf = async (text) => {
   const { tts, pcmToWav } = await import("./xf.mjs");
-  return pcmToWav(await tts(text, { vcn: process.env.XF_TTS_VCN || "henry", speed: 42 }));
+  return pcmToWav(await tts(text, { vcn: VOICE, speed: 42 }));
 };
 
 const gen = PROVIDERS[args.provider];
