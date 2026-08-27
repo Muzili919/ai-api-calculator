@@ -13,6 +13,7 @@
 | 本 README | 产品结构、开源借鉴、版权合规、技术方案、里程碑(V1) |
 | [`02-battle-plan.md`](02-battle-plan.md) | **对标科大讯飞作战方案**:功能对标矩阵、差异化八张牌、中考模考规格、架构与单位经济、视觉三方向 |
 | [`03-quote-plan.md`](03-quote-plan.md) | **报价与交付测算(内部)**:8 班/平板/10 万盘面的成本模型、报价结构、范围清单、平板技术要点、里程碑 |
+| [`05-api-onboarding.md`](05-api-onboarding.md) | **API 账号开通清单**:讯飞三件套获取步骤、企业认证前置条件、账号归属建议 |
 | [`04-speech-decision.md`](04-speech-decision.md) | **语音选型决策**:示范音(英式/预生成)与评测(讯飞 ISE)分开选型、引擎对比、成本修正、对甲方话术 |
 | [`research/`](research/) | 8 组调研原始资料(讯飞功能/痛点、初中生审美、学习App设计、语音评测API、DeepSeek、江苏中考口语、缺口批判),含全部来源链接 |
 | [`prototype.html`](prototype.html) | 学生端交互原型 V2(岛屿版) |
