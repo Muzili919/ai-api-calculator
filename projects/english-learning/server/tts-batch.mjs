@@ -133,12 +133,20 @@ for (const it of items) {
   const name = `${hash}.${EXT}`;
   const file = join(outDir, name);
   if (existsSync(file)) { manifest[it.text] = name; skipped++; continue; }   // 幂等
-  try {
-    writeFileSync(file, await gen(it.text));
-    manifest[it.text] = name;
-    done++;
-    if (done % 5 === 0) { flush(); console.log(`  已生成 ${done}…`); }   // 边跑边写盘,中断不丢映射
-  } catch (e) { failed++; console.error(`FAIL ${it.id}: ${e.message}`); }
+  let lastErr = null;
+  for (let tryN = 1; tryN <= 3; tryN++) {                                    // 重试:云端 TTS 偶发超时是常态
+    try {
+      writeFileSync(file, await gen(it.text));
+      manifest[it.text] = name;
+      done++; lastErr = null;
+      if (done % 5 === 0) { flush(); console.log(`  已生成 ${done}…`); }     // 边跑边写盘,中断不丢映射
+      break;
+    } catch (e) {
+      lastErr = e;
+      if (tryN < 3) await new Promise((r) => setTimeout(r, tryN * 1500));     // 退避 1.5s / 3s
+    }
+  }
+  if (lastErr) { failed++; console.error(`FAIL ${it.id}: ${lastErr.message}`); }
 }
 flush();
 console.log(`完成:新生成 ${done} / 复用 ${skipped} / 失败 ${failed} → ${outDir}`);
